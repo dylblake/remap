@@ -4,6 +4,7 @@ import pool from '../config/db';
 import { serviceSchema } from '../models/serviceModel';
 import { generateUUID } from '../utils/uuid';
 
+// Create a new service
 export const createService = async (req: Request, res: Response) => {
   try {
     // Generate a UUID for the new service
@@ -33,10 +34,72 @@ export const createService = async (req: Request, res: Response) => {
   }
 };
 
+// Get all services
 export const getServices = async (_req: Request, res: Response) => {
   try {
     const services = await pool.query('SELECT * FROM services');
     res.status(200).json(services.rows);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get a single service by ID
+export const getServiceById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const service = await pool.query('SELECT * FROM services WHERE uuid = $1', [id]);
+
+    if (service.rows.length === 0) {
+      return res.status(404).json({ message: 'Service not found' });
+    }
+
+    res.status(200).json(service.rows[0]);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Update a service by ID
+export const updateService = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // Validate and parse the incoming request data
+    const serviceData = serviceSchema.parse(req.body);
+
+    const { name, tier, upperServiceId, middleServiceId } = serviceData;
+
+    const updatedService = await pool.query(
+      'UPDATE services SET name = $1, tier = $2, upper_service_id = $3, middle_service_id = $4, updated_at = NOW() WHERE uuid = $5 RETURNING *',
+      [name, tier, upperServiceId, middleServiceId, id]
+    );
+
+    if (updatedService.rows.length === 0) {
+      return res.status(404).json({ message: 'Service not found' });
+    }
+
+    res.status(200).json(updatedService.rows[0]);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      res.status(400).json({ errors: error.errors });
+    } else {
+      res.status(500).json({ message: 'Server error' });
+    }
+  }
+};
+
+// Delete a service by ID
+export const deleteService = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const deletedService = await pool.query('DELETE FROM services WHERE uuid = $1 RETURNING *', [id]);
+
+    if (deletedService.rows.length === 0) {
+      return res.status(404).json({ message: 'Service not found' });
+    }
+
+    res.status(200).json({ message: 'Service deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
