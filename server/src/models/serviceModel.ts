@@ -2,10 +2,12 @@ import { z } from 'zod';
 import { baseSchema } from './BaseModel'
 
 export const serviceSchema = baseSchema.extend({
-  primaryServiceUUID: z.string().uuid(),
-  serviceName: z.string().min(2, "Name must be at least 2 characters long"),
-  primaryServiceId: z.string().uuid(),
-  secondaryServiceId: z.string().uuid(),
+  uuid: z.string().uuid(),
+  name: z.string().min(3, "Name must be at least 3 characters long"),
+  tier: z.enum(['pending', 'approved', 'rejected']),
+  upperServiceId: z.string().uuid().optional(),
+  middleServiceId: z.string().uuid().optional(),
+  
 });
 
 export type User = z.infer<typeof serviceSchema>;
