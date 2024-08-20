@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import pool from '../config/db';
 import { serviceSchema } from '../models/serviceModel';
 
-export const createUser = async (req: Request, res: Response) => {
+export const createService = async (req: Request, res: Response) => {
   try {
     const serviceData = serviceSchema.parse(req.body);
 
