@@ -1,0 +1,15 @@
+{
+  "name": "gp_glodex",
+  "version": "1.0.0",
+  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fontsource/open-sans": "^5.0.29",
+    "@fontsource/raleway": "^5.0.20"
+  }
+}
