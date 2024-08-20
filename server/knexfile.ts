@@ -1,20 +1,23 @@
 require('dotenv').config(); // Load environment variables from .env
 
+console.log('Database Name:', process.env.DB_NAME); // Check if DB_NAME is correctly loaded
+
 module.exports = {
   development: {
-    client: 'pg', // PostgreSQL client
+    client: 'pg',
     connection: {
-      host: process.env.DB_HOST || '127.0.0.1',
-      port: process.env.DB_PORT || 5432,
-      user: process.env.DB_USER || 'your_database_user',
-      password: process.env.DB_PASSWORD || 'your_database_password',
-      database: process.env.DB_NAME || 'your_database_name',
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
     },
     migrations: {
-      directory: './migrations', // Directory to store migration files
+      directory: './migrations',
     },
     seeds: {
-      directory: './seeds', // Directory to store seed files
+      directory: './seeds',
     },
-  }
-}
+  },
+  // Other environments...
+};
