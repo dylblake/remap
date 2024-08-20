@@ -16,12 +16,12 @@ export const createService = async (req: Request, res: Response) => {
       uuid: newServiceId, // Add the generated UUID to the request data
     });
 
-    const { uuid, name, tier, upperServiceId, middleServiceId } = serviceData;
+    const { uuid, name, type, upperServiceId, middleServiceId } = serviceData;
 
     // Insert the new service into the database
     const newService = await pool.query(
-      'INSERT INTO services (uuid, name, tier, upper_service_id, middle_service_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *',
-      [uuid, name, tier, upperServiceId, middleServiceId]
+      'INSERT INTO services (uuid, name, type, upper_service_id, middle_service_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *',
+      [uuid, name, type, upperServiceId, middleServiceId]
     );
 
     res.status(201).json(newService.rows[0]);
@@ -68,11 +68,11 @@ export const updateService = async (req: Request, res: Response) => {
     // Validate and parse the incoming request data
     const serviceData = serviceSchema.parse(req.body);
 
-    const { name, tier, upperServiceId, middleServiceId } = serviceData;
+    const { name, type, upperServiceId, middleServiceId } = serviceData;
 
     const updatedService = await pool.query(
-      'UPDATE services SET name = $1, tier = $2, upper_service_id = $3, middle_service_id = $4, updated_at = NOW() WHERE uuid = $5 RETURNING *',
-      [name, tier, upperServiceId, middleServiceId, id]
+      'UPDATE services SET name = $1, type = $2, upper_service_id = $3, middle_service_id = $4, updated_at = NOW() WHERE uuid = $5 RETURNING *',
+      [name, type, upperServiceId, middleServiceId, id]
     );
 
     if (updatedService.rows.length === 0) {
