@@ -44,7 +44,7 @@ export const getServices = async (_req: Request, res: Response) => {
   }
 };
 
-// Get a single service by ID
+// Get a single service by UUID
 export const getServiceById = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -60,7 +60,7 @@ export const getServiceById = async (req: Request, res: Response) => {
   }
 };
 
-// Update a service by ID
+// Update a service by UUID
 export const updateService = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -89,7 +89,7 @@ export const updateService = async (req: Request, res: Response) => {
   }
 };
 
-// Delete a service by ID
+// Delete a service by UUID
 export const deleteService = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;

@@ -9,13 +9,13 @@ serviceRoutes.post('/', createService);
 // Route to get all services
 serviceRoutes.get('/', getServices);
 
-// Route to get a single service by ID
+// Route to get a single service by UUID
 serviceRoutes.get('/:id', getServiceById);
 
-// Route to update a service by ID
+// Route to update a service by UUID
 serviceRoutes.put('/:id', updateService);
 
-// Route to delete a service by ID
+// Route to delete a service by UUID
 serviceRoutes.delete('/:id', deleteService);
 
 export default serviceRoutes;

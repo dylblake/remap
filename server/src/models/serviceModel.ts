@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { baseSchema } from './BaseModel'
+import { baseSchema } from './BaseModel';
 
 export const serviceSchema = baseSchema.extend({
   uuid: z.string().uuid(),
@@ -7,7 +7,6 @@ export const serviceSchema = baseSchema.extend({
   tier: z.enum(['pending', 'approved', 'rejected']),
   upperServiceId: z.string().uuid().optional(),
   middleServiceId: z.string().uuid().optional(),
-  
 });
 
-export type User = z.infer<typeof serviceSchema>;
+export type ServiceModel = z.infer<typeof serviceSchema>;
