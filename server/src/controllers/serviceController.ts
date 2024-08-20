@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { Request, Response } from 'express';
 import pool from '../config/db';
-import { serviceSchema } from '../models/serviceModel';
+import { serviceSchema } from '../models/ServiceModel';
 import { generateUUID } from '../utils/uuid';
 
 // Create a new service
