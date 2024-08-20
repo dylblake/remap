@@ -1,17 +1,16 @@
 {
-  "extends": "../tsconfig.base.json",   
+  "extends": "../tsconfig.base.json",
   "compilerOptions": {
-      "target": "ES6",
-      "module": "commonjs",
-      "strict": true,
-      "esModuleInterop": true,
-      "skipLibCheck": true,
-      "forceConsistentCasingInFileNames": true,
-      "outDir": "./dist",
-      "rootDir": "./src",
-      "types": ["node"]
-    },
-    "include": ["src/**/*.ts"],
-    "exclude": ["node_modules", "**/*.spec.ts"]
-  }
-  
+    "target": "ES6",
+    "module": "commonjs",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "rootDir": "./",
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts", "knexfile.ts", "migrations/**/*.ts", "seeds/**/*.ts"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}

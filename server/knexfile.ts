@@ -13,10 +13,10 @@ module.exports = {
       database: process.env.DB_NAME,
     },
     migrations: {
-      directory: './migrations',
+      directory: './migrations', // Path to migrations directory
     },
     seeds: {
-      directory: './seeds',
+      directory: './seeds', // Path to seeds directory
     },
   },
   // Other environments...
