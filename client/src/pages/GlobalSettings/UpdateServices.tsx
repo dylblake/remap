@@ -3,6 +3,7 @@ import { Grid, GridItem, Box, Heading, Text, VStack } from "@chakra-ui/react";
 import NavBar from "../../components/NavBar";
 import MenuLink from "../../components/MenuLink";
 import { FaArrowRight } from "react-icons/fa";
+import ServiceList from "../../components/ServiceList";
 
 const UpdateServices: React.FC = () => {
   return (
