@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from "react";
+import { Service } from "../types/Service";
 
 interface DragAndDropContainerProps {
   children: React.ReactNode;

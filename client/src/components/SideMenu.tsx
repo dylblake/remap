@@ -18,6 +18,7 @@ import {
   FaBalanceScaleLeft,
   FaTable,
   FaFileAlt,
+  FaGlobe,
 } from "react-icons/fa";
 import { SettingsIcon } from "@chakra-ui/icons";
 import SearchBar from "./SearchBar";
@@ -90,6 +91,11 @@ const SideMenu: React.FC<SideMenuProps> = ({
           />
           <MenuLink to="/" label="Grids" icon={<FaTable />} />
           <MenuLink to="/" label="Reporting" icon={<FaFileAlt />} />
+          <MenuLink
+            to="/global-settings"
+            label="Global Settings"
+            icon={<FaGlobe />}
+          />
         </DrawerBody>
       </DrawerContent>
     </Drawer>

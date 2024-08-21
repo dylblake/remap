@@ -44,24 +44,11 @@ const UserProfile: React.FC = () => {
             <Text fontSize="xl">
               Your one-stop solution for global index tracking and analysis.
             </Text>
-            {isXsScreen ? (
+            {isXsScreen && (
               <Text fontSize="md">
                 Viewing on a small screen? Check out the settings for more
                 options!
               </Text>
-            ) : (
-              <Box as="a" href="/settings">
-                <Box
-                  as="button"
-                  bg="blue.500"
-                  color="white"
-                  px={4}
-                  py={2}
-                  borderRadius="md"
-                >
-                  Go to Settings
-                </Box>
-              </Box>
             )}
           </VStack>
         </Box>

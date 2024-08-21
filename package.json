@@ -10,6 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "@fontsource/open-sans": "^5.0.29",
-    "@fontsource/raleway": "^5.0.20"
+    "@fontsource/raleway": "^5.0.20",
+    "axios": "^1.7.4"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/react": "^18.3.4",
+    "typescript": "^5.5.4"
   }
 }
