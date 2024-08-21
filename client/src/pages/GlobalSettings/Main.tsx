@@ -12,8 +12,8 @@ const GlobalSettings: React.FC = () => {
         md: `"nav nav" "aside main"`,
       }}
       templateColumns={{
-        base: "1fr", // Single column on small screens
-        md: "240px 1fr", // 240px for aside, remaining space for main on medium and larger screens
+        base: "1fr",
+        md: "240px 1fr",
       }}
     >
       <GridItem area="nav">

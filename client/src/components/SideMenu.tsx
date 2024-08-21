@@ -38,8 +38,8 @@ const SideMenu: React.FC<SideMenuProps> = ({
   const handleSearch = async (query: string) => {
     console.log("Searching for:", query);
 
-    // Mock fetch request to demonstrate search functionality
-    const response = await fetch(`https://api.example.com/search?q=${query}`);
+    // BOOKMARK
+    const response = await fetch(`https://thing.com/search?q=${query}`);
     const data = await response.json();
 
     console.log("Search results:", data);

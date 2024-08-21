@@ -40,8 +40,6 @@ export const DragAndDropContainer: React.FC<DragAndDropContainerProps> = ({
   );
 
   const reorderItems = (draggedId: string, targetId: string): Service[] => {
-    // Implement the logic to reorder items based on the drag-and-drop operation
-    // This is a placeholder for reordering logic
     return [...items];
   };
 

@@ -5,7 +5,7 @@ import { Box, Link, Text, HStack } from "@chakra-ui/react";
 interface MenuLinkProps {
   to: string;
   label: string;
-  icon?: React.ReactElement; // Optional icon prop
+  icon?: React.ReactElement;
 }
 
 const MenuLink: React.FC<MenuLinkProps> = ({ to, label, icon }) => {

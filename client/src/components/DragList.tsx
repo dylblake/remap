@@ -1,4 +1,3 @@
-// DragList.tsx
 import React from "react";
 import { DragItem } from "./DragItem";
 import { DragAndDropContainer } from "./DragAndDropContainer";

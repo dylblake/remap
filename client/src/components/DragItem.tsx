@@ -1,6 +1,7 @@
 import React from "react";
 import { Box } from "@chakra-ui/react";
 import { IndentationControls } from "./IndentationControls";
+import { Service } from "../types/Service";
 
 interface DragItemProps {
   service: Service;
