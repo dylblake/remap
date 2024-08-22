@@ -31,7 +31,7 @@ const UpdateServices: React.FC = () => {
             icon={<FaArrowRight />}
           />
           <MenuLink
-            to="/UpdateServices"
+            to="/global-service-settings"
             label="Update Services"
             icon={<FaArrowRight />}
           />
@@ -46,6 +46,7 @@ const UpdateServices: React.FC = () => {
               Global Service Settings
             </Heading>
             <Text fontSize="xl">Do some stuff below:</Text>
+            <ServiceList />
           </VStack>
         </Box>
       </GridItem>

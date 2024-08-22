@@ -1,39 +1,25 @@
-// client/src/components/ServiceList.tsx
-import React, { useEffect, useState } from "react";
-import { fetchServices } from "../api/service";
-import { Service } from "../types/Service";
+import React from "react";
+import { useServices } from "../hooks/useServices"; // Use named import
+import { Service } from "../types/Service"; // Import the Service type
 
 const ServiceList: React.FC = () => {
-  const [services, setServices] = useState<Service[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { services, error, isLoading } = useServices();
 
-  useEffect(() => {
-    const loadServices = async () => {
-      try {
-        const servicesData = await fetchServices();
-        setServices(servicesData);
-      } catch (error) {
-        setError("Failed to load services");
-      }
-    };
-
-    loadServices();
-  }, []);
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
     <div>
-      <h1>Service List</h1>
-      <ul>
-        {services.map((service) => (
-          <li key={service.uuid}>
-            {service.name} - Type: {service.type}
-          </li>
-        ))}
-      </ul>
+      {services.length > 0 ? (
+        services.map((service: Service) => (
+          <div key={service.uuid}>
+            <h3>{service.name}</h3>
+            <p>Type: {service.type}</p>
+          </div>
+        ))
+      ) : (
+        <p>No services available.</p>
+      )}
     </div>
   );
 };
