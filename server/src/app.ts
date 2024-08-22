@@ -1,9 +1,11 @@
-// src/app.ts
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env' });
+
 import express from 'express';
 import serviceRoutes from './routes/serviceRoutes';
 
 const app = express();
-const port = 5000;
+const port = process.env.PORT;
 
 // Middleware to parse JSON
 app.use(express.json());
