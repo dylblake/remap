@@ -7,18 +7,17 @@ import { generateUUID } from '../utils/uuid';
 // Create a new service
 export const createService = async (req: Request, res: Response) => {
   try {
-    // Generate a UUID for the new service
+    // Generate UUID
     const newServiceId = generateUUID();
 
-    // Validate and parse the incoming request data
     const serviceData = serviceSchema.parse({
       ...req.body,
-      uuid: newServiceId, // Add the generated UUID to the request data
+      uuid: newServiceId, 
     });
 
     const { uuid, name, type, upperServiceId, middleServiceId } = serviceData;
 
-    // Insert the new service into the database
+    // Insert new service into db
     const newService = await pool.query(
       'INSERT INTO services (uuid, name, type, upper_service_id, middle_service_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *',
       [uuid, name, type, upperServiceId, middleServiceId]
@@ -37,7 +36,7 @@ export const createService = async (req: Request, res: Response) => {
 // Get all services
 export const getServices = async (_req: Request, res: Response) => {
   try {
-    const services = await pool.query('SELECT * FROM services');
+    const services = await pool.query('SELECT uuid, name, upper_service_id, middle_service_id, type FROM services');
     res.status(200).json(services.rows);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
@@ -65,7 +64,7 @@ export const updateService = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    // Validate and parse the incoming request data
+ 
     const serviceData = serviceSchema.parse(req.body);
 
     const { name, type, upperServiceId, middleServiceId } = serviceData;
