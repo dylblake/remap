@@ -1,5 +1,4 @@
 {
-  "extends": "../tsconfig.base.json", 
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2023"],
@@ -8,12 +7,12 @@
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
-    "moduleDetection": "auto", // Change to "auto" if you face issues with "force"
+    "moduleDetection": "auto",
     "noEmit": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"] // Ensure all relevant files are included
+  "include": ["src/**/*.ts", "src/**/*.tsx", "vite.config.ts"]
 }

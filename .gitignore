@@ -41,6 +41,5 @@ jspm_packages/
 *.sln
 *.sw?
 
-#Database files
-*db.ts
+
 

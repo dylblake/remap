@@ -1,40 +1,63 @@
-// client/src/components/ServiceList.tsx
-import React, { useEffect, useState } from "react";
-import { fetchServices } from "../api/service";
+import React from "react";
+import { useServices } from "../hooks/useServices";
 import { Service } from "../types/Service";
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Box,
+  Text,
+  Spinner,
+  Alert,
+  AlertIcon,
+  Flex,
+} from "@chakra-ui/react";
+import DeleteIcon from "./DeleteIcon";
 
 const ServiceList: React.FC = () => {
-  const [services, setServices] = useState<Service[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { services, error, isLoading, isRefetching, refetch } = useServices();
 
-  useEffect(() => {
-    const loadServices = async () => {
-      try {
-        const servicesData = await fetchServices();
-        setServices(servicesData);
-      } catch (error) {
-        setError("Failed to load services");
-      }
-    };
-
-    loadServices();
-  }, []);
-
-  if (error) {
-    return <div>{error}</div>;
-  }
+  if (isLoading && !isRefetching) return <Spinner size="lg" />;
+  if (error)
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        Error: {error}
+      </Alert>
+    );
 
   return (
-    <div>
-      <h1>Service List</h1>
-      <ul>
-        {services.map((service) => (
-          <li key={service.uuid}>
-            {service.name} - Type: {service.type}
-          </li>
-        ))}
-      </ul>
-    </div>
+    <Box p={4}>
+      {services.length > 0 ? (
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>Name</Th>
+              <Th textAlign="center">Actions</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {services.map((service: Service) => (
+              <Tr key={service.uuid}>
+                <Td>{service.name}</Td>
+                <Td>
+                  <Flex justify="center">
+                    <DeleteIcon uuid={service.uuid} onSuccess={refetch} />
+                  </Flex>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
+      ) : (
+        <Text textAlign="center" color="gray.500">
+          No services available.
+        </Text>
+      )}
+    </Box>
   );
 };
 
