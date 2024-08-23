@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Service } from '../types/Service'; // Adjust the path if necessary
+import { Service } from '../types/Service'; 
 
 export const fetchServices = async (): Promise<Service[]> => {
   try {
