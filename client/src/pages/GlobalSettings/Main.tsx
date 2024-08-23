@@ -1,8 +1,17 @@
 import React from "react";
-import { Grid, GridItem, Box, Heading, Text, VStack } from "@chakra-ui/react";
+import {
+  Grid,
+  GridItem,
+  Box,
+  Heading,
+  Text,
+  VStack,
+  Flex,
+  Icon,
+} from "@chakra-ui/react";
 import NavBar from "../../components/NavBar";
 import MenuLink from "../../components/MenuLink";
-import { FaArrowRight } from "react-icons/fa";
+import { FaAngleRight, FaGlobe } from "react-icons/fa";
 
 const GlobalSettings: React.FC = () => {
   return (
@@ -13,29 +22,41 @@ const GlobalSettings: React.FC = () => {
       }}
       templateColumns={{
         base: "1fr",
-        md: "240px 1fr",
+        md: "300px 1fr",
       }}
     >
       <GridItem area="nav">
         <NavBar />
       </GridItem>
-      <GridItem area="aside" display={{ base: "none", md: "block" }}>
+      <GridItem
+        area="aside"
+        display={{ base: "none", md: "block" }}
+        position="relative"
+      >
         <Box p={4}>
-          <Heading as="h2" size="md" padding={6}>
-            Aside Section
-          </Heading>
-          <MenuLink
-            to="/global-settings"
-            label="Main Global"
-            icon={<FaArrowRight />}
-          />
-          <MenuLink
-            to="/global-service-settings"
-            label="Update Services"
-            icon={<FaArrowRight />}
-          />
-          <MenuLink to="/" label="...." icon={<FaArrowRight />} />
-          <MenuLink to="/" label="...." icon={<FaArrowRight />} />
+          <Box position="absolute" top={6} left={6}>
+            <Flex align="center">
+              <Icon as={FaGlobe} boxSize="36px" mr="12px" />
+              <Heading as="h2" size="lg">
+                Global Settings
+              </Heading>
+            </Flex>
+          </Box>
+          <Box mt={16} pl={3}>
+            {" "}
+            <MenuLink
+              to="/global-settings"
+              label="Main Global"
+              icon={<FaAngleRight />}
+            />
+            <MenuLink
+              to="/global-service-settings"
+              label="Update Services"
+              icon={<FaAngleRight />}
+            />
+            <MenuLink to="/" label="...." icon={<FaAngleRight />} />
+            <MenuLink to="/" label="...." icon={<FaAngleRight />} />
+          </Box>
         </Box>
       </GridItem>
       <GridItem area="main">

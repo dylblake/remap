@@ -1,9 +1,19 @@
 import React from "react";
-import { Grid, GridItem, Box, Heading, Text, VStack } from "@chakra-ui/react";
+import {
+  Grid,
+  GridItem,
+  Box,
+  Heading,
+  Text,
+  VStack,
+  Flex,
+  Icon,
+} from "@chakra-ui/react";
 import NavBar from "../../components/NavBar";
 import MenuLink from "../../components/MenuLink";
-import { FaArrowRight } from "react-icons/fa";
+import { FaAngleRight, FaGlobe } from "react-icons/fa";
 import ServiceList from "../../components/ServiceList";
+import ServiceForm from "../../components/ServiceForm";
 
 const UpdateServices: React.FC = () => {
   return (
@@ -14,41 +24,73 @@ const UpdateServices: React.FC = () => {
       }}
       templateColumns={{
         base: "1fr",
-        md: "240px 1fr",
+        md: "300px 1fr",
       }}
     >
       <GridItem area="nav">
         <NavBar />
       </GridItem>
-      <GridItem area="aside" display={{ base: "none", md: "block" }}>
+      <GridItem
+        area="aside"
+        display={{ base: "none", md: "block" }}
+        position="relative"
+      >
         <Box p={4}>
-          <Heading as="h2" size="md" padding={6}>
-            Aside Section
-          </Heading>
-          <MenuLink
-            to="/global-settings"
-            label="Main Global"
-            icon={<FaArrowRight />}
-          />
-          <MenuLink
-            to="/global-service-settings"
-            label="Update Services"
-            icon={<FaArrowRight />}
-          />
-          <MenuLink to="/" label="...." icon={<FaArrowRight />} />
-          <MenuLink to="/" label="...." icon={<FaArrowRight />} />
+          <Box position="absolute" top={6} left={6}>
+            <Flex align="center">
+              <Icon as={FaGlobe} boxSize="36px" mr="12px" />
+              <Heading as="h2" size="lg">
+                Global Settings
+              </Heading>
+            </Flex>
+          </Box>
+          <Box mt={16} pl={3}>
+            <MenuLink
+              to="/global-settings"
+              label="Main Global"
+              icon={<FaAngleRight />}
+            />
+            <MenuLink
+              to="/global-service-settings"
+              label="Update Services"
+              icon={<FaAngleRight />}
+            />
+            <MenuLink to="/" label="...." icon={<FaAngleRight />} />
+            <MenuLink to="/" label="...." icon={<FaAngleRight />} />
+          </Box>
         </Box>
       </GridItem>
       <GridItem area="main">
-        <Box p={8} textAlign="center">
+        <Flex direction="column" p={4} gap={6}>
           <VStack spacing={6}>
-            <Heading as="h1" size="2xl">
-              Global Service Settings
+            <Heading as="h1" size="xl" pb={10}>
+              Global Services Settings
             </Heading>
-            <Text fontSize="xl">Do some stuff below:</Text>
-            <ServiceList />
+            <Text></Text>
           </VStack>
-        </Box>
+          <Flex direction="row" gap={6}>
+            <Box flex="1">
+              <Flex direction="column" align="center" mb={4}>
+                <Text textAlign="center" mb={4}>
+                  Drag to reorder and indent to show correct relationship. Oh
+                  boy this will be cool when it's completed.
+                </Text>
+              </Flex>
+              <ServiceList />
+            </Box>
+            <Box flex="1" mx={4}>
+              <Flex direction="column" align="center" mb={4}>
+                <Text textAlign="center" mb={4}>
+                  Use this form to add new services to the GloDex.
+                </Text>
+              </Flex>
+              <ServiceForm />
+            </Box>
+            <Box flex="1">
+              <Box /> {/* Placeholder for far right side of main */}
+            </Box>
+          </Flex>
+        </Flex>
       </GridItem>
     </Grid>
   );

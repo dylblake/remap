@@ -21,7 +21,7 @@ const Home: React.FC = () => {
       }}
       templateColumns={{
         base: "1fr",
-        md: "240px 1fr",
+        md: "300px 1fr",
       }}
     >
       <GridItem area="nav">
