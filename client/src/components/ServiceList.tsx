@@ -1,26 +1,63 @@
 import React from "react";
-import { useServices } from "../hooks/useServices"; // Use named import
-import { Service } from "../types/Service"; // Import the Service type
+import { useServices } from "../hooks/useServices";
+import { Service } from "../types/Service";
+import {
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Box,
+  Text,
+  Spinner,
+  Alert,
+  AlertIcon,
+  Flex,
+} from "@chakra-ui/react";
+import DeleteIcon from "./DeleteIcon";
 
 const ServiceList: React.FC = () => {
-  const { services, error, isLoading } = useServices();
+  const { services, error, isLoading, isRefetching, refetch } = useServices();
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error}</p>;
+  if (isLoading && !isRefetching) return <Spinner size="lg" />;
+  if (error)
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        Error: {error}
+      </Alert>
+    );
 
   return (
-    <div>
+    <Box p={4}>
       {services.length > 0 ? (
-        services.map((service: Service) => (
-          <div key={service.uuid}>
-            <h3>{service.name}</h3>
-            <p>Type: {service.type}</p>
-          </div>
-        ))
+        <Table variant="simple">
+          <Thead>
+            <Tr>
+              <Th>Name</Th>
+              <Th textAlign="center">Actions</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {services.map((service: Service) => (
+              <Tr key={service.uuid}>
+                <Td>{service.name}</Td>
+                <Td>
+                  <Flex justify="center">
+                    <DeleteIcon uuid={service.uuid} onSuccess={refetch} />
+                  </Flex>
+                </Td>
+              </Tr>
+            ))}
+          </Tbody>
+        </Table>
       ) : (
-        <p>No services available.</p>
+        <Text textAlign="center" color="gray.500">
+          No services available.
+        </Text>
       )}
-    </div>
+    </Box>
   );
 };
 
