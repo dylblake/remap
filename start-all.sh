@@ -3,11 +3,11 @@
 # Define the port number for the React client
 REACT_PORT=5176
 
+# Kill processes using port 5176
+lsof -ti:$REACT_PORT | xargs kill -9
+
 # Start PostgreSQL
 brew services start postgresql@14
-
-# Launch PostgreSQL
-# psql -d glodex -U postgres
 
 # Wait for PostgreSQL to be ready (adjust this duration if needed)
 sleep 5
