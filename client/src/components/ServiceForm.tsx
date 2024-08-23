@@ -58,13 +58,15 @@ const ServiceForm: React.FC = () => {
   return (
     <Box p={4}>
       <form onSubmit={handleSubmit}>
-        <FormControl id="name" mb={4} mt={2.5} isRequired>
+        <FormControl id="name" mb={4} isRequired>
           <FormLabel
             fontSize="xs"
             fontWeight="bold"
             color="gray.400"
             textTransform="uppercase"
             letterSpacing="wider"
+            lineHeight="1.2"
+            marginBottom={0}
           >
             Name
           </FormLabel>

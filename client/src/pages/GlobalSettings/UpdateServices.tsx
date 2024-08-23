@@ -68,26 +68,27 @@ const UpdateServices: React.FC = () => {
             </Heading>
             <Text></Text>
           </VStack>
-          <Flex direction="row" gap={6}>
+          <Flex direction="row" gap={6} align="flex-start">
             <Box flex="1">
-              <Flex direction="column" align="center" mb={4}>
-                <Text textAlign="center" mb={4}>
-                  Drag to reorder and indent to show correct relationship. Oh
-                  boy this will be cool when it's completed.
+              <Flex direction="column">
+                <Text textAlign="center" mb={0}>
+                  {" "}
+                  Drag to reorder and indent to show correct relationship.
                 </Text>
               </Flex>
               <ServiceList />
             </Box>
             <Box flex="1" mx={4}>
-              <Flex direction="column" align="center" mb={4}>
-                <Text textAlign="center" mb={4}>
+              <Flex direction="column">
+                <Text textAlign="center" mb={3}>
+                  {" "}
                   Use this form to add new services to the GloDex.
                 </Text>
               </Flex>
               <ServiceForm />
             </Box>
             <Box flex="1">
-              <Box /> {/* Placeholder for far right side of main */}
+              <Box />
             </Box>
           </Flex>
         </Flex>

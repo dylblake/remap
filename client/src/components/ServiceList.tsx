@@ -35,8 +35,21 @@ const ServiceList: React.FC = () => {
         <Table variant="simple">
           <Thead>
             <Tr>
-              <Th>Name</Th>
-              <Th textAlign="center">Actions</Th>
+              <Th
+                fontSize="xs"
+                fontWeight="bold"
+                color="gray.400"
+                textTransform="uppercase"
+                letterSpacing="wider"
+                lineHeight="1.2"
+                paddingBottom="4px"
+                textAlign="left"
+              >
+                Name
+              </Th>
+              <Th textAlign="center" paddingBottom="4px">
+                Actions
+              </Th>
             </Tr>
           </Thead>
           <Tbody>
