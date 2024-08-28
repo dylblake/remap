@@ -12,7 +12,7 @@ const MenuLink: React.FC<MenuLinkProps> = ({ to, label, icon }) => {
   return (
     <Box mb={4}>
       <Link as={RouterLink} to={to} _hover={{ textDecoration: "none" }}>
-        <HStack spacing={2}>
+        <HStack spacing={2} _hover={{ color: "green.500" }}>
           {icon && <Box>{icon}</Box>}
           <Text fontSize="xl" fontWeight="bold">
             {label}

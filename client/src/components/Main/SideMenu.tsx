@@ -61,6 +61,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                   colorScheme="gray"
                   size="lg"
                   mr={-2.5}
+                  _hover={{ color: "green.500" }}
                 />
               </Link>
               <Link to="/settings">
@@ -71,6 +72,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
                   colorScheme="gray"
                   size="lg"
                   mr={2}
+                  _hover={{ color: "green.500" }}
                 />
               </Link>
               <DrawerCloseButton position="relative" top="0" />

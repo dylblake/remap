@@ -9,8 +9,8 @@ import {
   Flex,
   Icon,
 } from "@chakra-ui/react";
-import NavBar from "../../components/NavBar";
-import MenuLink from "../../components/MenuLink";
+import NavBar from "../../components/Main/NavBar";
+import MenuLink from "../../components/Main/MenuLink";
 import { FaAngleRight, FaGlobe } from "react-icons/fa";
 
 const GlobalSettings: React.FC = () => {

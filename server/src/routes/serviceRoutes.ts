@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getServices, createService, getServiceById, updateService, deleteService } from '../controllers/serviceController';
+import { getServices, createService, getServiceById, updateService, deleteService, updateServiceOrder } from '../controllers/serviceController';
 
 const serviceRoutes = Router();
 
@@ -8,6 +8,9 @@ serviceRoutes.post('/', createService);
 
 // Route to get all services
 serviceRoutes.get('/', getServices);
+
+// Route to update the order of services
+serviceRoutes.put('/order', updateServiceOrder);
 
 // Route to get a single service by UUID
 serviceRoutes.get('/:id', getServiceById);

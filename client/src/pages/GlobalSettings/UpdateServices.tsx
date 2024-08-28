@@ -9,11 +9,10 @@ import {
   Flex,
   Icon,
 } from "@chakra-ui/react";
-import NavBar from "../../components/NavBar";
-import MenuLink from "../../components/MenuLink";
+import NavBar from "../../components/Main/NavBar";
+import MenuLink from "../../components/Main/MenuLink";
 import { FaAngleRight, FaGlobe } from "react-icons/fa";
-import ServiceList from "../../components/ServiceList";
-import ServiceForm from "../../components/ServiceForm";
+import ServiceTree from "../../components/GlobalSettings/Service/ServiceTree";
 
 const UpdateServices: React.FC = () => {
   return (
@@ -27,9 +26,12 @@ const UpdateServices: React.FC = () => {
         md: "300px 1fr",
       }}
     >
+      {/* Nav Bar */}
       <GridItem area="nav">
         <NavBar />
       </GridItem>
+
+      {/* Side Panel */}
       <GridItem
         area="aside"
         display={{ base: "none", md: "block" }}
@@ -60,36 +62,19 @@ const UpdateServices: React.FC = () => {
           </Box>
         </Box>
       </GridItem>
+
+      {/* Main */}
       <GridItem area="main">
+        {/* Heading */}
         <Flex direction="column" p={4} gap={6}>
-          <VStack spacing={6}>
-            <Heading as="h1" size="xl" pb={10}>
+          <VStack spacing={3} mb={10}>
+            <Heading as="h1" size="xl" pt={5} pb={0}>
               Global Services Settings
             </Heading>
-            <Text></Text>
+            <Text size="s">Subheading text here</Text>
           </VStack>
-          <Flex direction="row" gap={6}>
-            <Box flex="1">
-              <Flex direction="column" align="center" mb={4}>
-                <Text textAlign="center" mb={4}>
-                  Drag to reorder and indent to show correct relationship. Oh
-                  boy this will be cool when it's completed.
-                </Text>
-              </Flex>
-              <ServiceList />
-            </Box>
-            <Box flex="1" mx={4}>
-              <Flex direction="column" align="center" mb={4}>
-                <Text textAlign="center" mb={4}>
-                  Use this form to add new services to the GloDex.
-                </Text>
-              </Flex>
-              <ServiceForm />
-            </Box>
-            <Box flex="1">
-              <Box /> {/* Placeholder for far right side of main */}
-            </Box>
-          </Flex>
+          {/* Main Section */}
+          <ServiceTree />
         </Flex>
       </GridItem>
     </Grid>
