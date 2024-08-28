@@ -129,3 +129,42 @@ export const deleteService = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+export const updateServiceOrder = async (req: Request, res: Response) => {
+  const client = await pool.connect();
+  try {
+    // Log the incoming request body
+    console.log('Received request body:', req.body);
+
+    const { services } = req.body;
+
+    if (!services || services.length === 0) {
+      return res.status(400).json({ message: 'No services data received' });
+    }
+
+    await client.query('BEGIN');
+
+    for (const service of services) {
+      const { uuid, order } = service;
+      await client.query(
+        `UPDATE services SET "order" = $1, updated_at = NOW() WHERE uuid = $2`,
+        [order, uuid]
+      );
+    }
+
+    await client.query('COMMIT');
+    res.status(200).json({ message: 'Order updated successfully' });
+  } catch (err) {
+    // Narrowing the error type to `Error` using `instanceof`
+    if (err instanceof Error) {
+      console.error('Error during updateServiceOrder:', err.message);
+      res.status(500).json({ message: 'Failed to update order', error: err.message });
+    } else {
+      // Handle the case where `err` is not an instance of `Error`
+      console.error('Unexpected error during updateServiceOrder:', err);
+      res.status(500).json({ message: 'Failed to update order', error: 'Unknown error occurred' });
+    }
+  } finally {
+    client.release();
+  }
+};
