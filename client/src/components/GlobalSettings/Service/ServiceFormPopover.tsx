@@ -15,12 +15,10 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import useCreateService from "../../../hooks/useCreateService";
-import { useServices } from "../../../hooks/useServices"; // Import useServices
 
 const ServiceFormPopover: React.FC = () => {
   const [name, setName] = useState("");
   const { createService, error, isLoading, service } = useCreateService();
-  const { refetch } = useServices(); // Get refetch function
   const toast = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -40,11 +38,9 @@ const ServiceFormPopover: React.FC = () => {
     try {
       await createService({
         name,
-        order: 1, // Assuming you have a default order
-        type: "upper", // Default type; adjust based on your needs
+        order: 1,
+        type: "upper",
       });
-
-      await refetch(); // Trigger refetch after creation
 
       if (service) {
         toast({
@@ -55,7 +51,7 @@ const ServiceFormPopover: React.FC = () => {
           isClosable: true,
         });
 
-        setName(""); // Clear input after successful creation
+        setName("");
       }
     } catch (err) {
       toast({
@@ -96,7 +92,7 @@ const ServiceFormPopover: React.FC = () => {
                 isLoading={isLoading}
                 size="sm"
               >
-                Add Service
+                Create
               </Button>
             </PopoverFooter>
           </form>
