@@ -5,15 +5,17 @@ import {
   ChevronRightIcon,
   DragHandleIcon,
 } from "@chakra-ui/icons";
+import { useDrag } from "react-dnd";
 import { Service } from "../../../types/Service";
 import DeleteIcon from "./DeleteIcon";
+import serviceItemTypes from "../../../types/serviceItemTypes";
 
 interface ServiceTreeRowProps {
   service: Service;
   isExpanded?: boolean;
   onToggle?: () => void;
   level: "upper" | "middle" | "lower";
-  allServices: Service[]; // Pass in all services to check for children
+  allServices: Service[];
 }
 
 const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
@@ -21,7 +23,7 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
   isExpanded = false,
   onToggle,
   level,
-  allServices, // All services to check for children
+  allServices,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [hasChildren, setHasChildren] = useState(false);
@@ -41,6 +43,14 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
       );
     }
   }, [allServices, level, service.uuid]);
+
+  const [{ isDragging }, drag, preview] = useDrag(() => ({
+    type: serviceItemTypes.ROW,
+    item: { type: serviceItemTypes.ROW }, // Data to pass with the drag event
+    collect: (monitor) => ({
+      isDragging: !!monitor.isDragging(),
+    }),
+  }));
 
   switch (level) {
     case "upper":
@@ -62,7 +72,11 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
 
   return (
     <Tr boxShadow={shadow} bg="transparent">
-      <Td paddingLeft={paddingLeft}>
+      <Td
+        paddingLeft={paddingLeft}
+        opacity={isDragging ? 0.5 : 1}
+        ref={preview}
+      >
         <Flex align="center">
           {/* Drag icon */}
           <IconButton
@@ -73,9 +87,10 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
             variant="ghost"
             _hover={{ bg: "transparent" }}
             cursor="grab"
+            ref={drag}
           />
 
-          {/* Text and Expand/Collapse icon */}
+          {/* Text and exp/col icon */}
           <Flex
             align="center"
             onMouseEnter={() => setIsHovered(true)}

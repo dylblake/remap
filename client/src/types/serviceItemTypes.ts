@@ -1,5 +1,6 @@
 const serviceItemTypes = {
-    CARD: "card"
+    CARD: "card",
+    ROW: "row"
 };
 
 export default serviceItemTypes;

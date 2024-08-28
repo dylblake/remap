@@ -68,7 +68,7 @@ const UpdateServices: React.FC = () => {
         {/* Heading */}
         <Flex direction="column" p={4} gap={6}>
           <VStack spacing={3} mb={10}>
-            <Heading as="h1" size="xl" pb={0}>
+            <Heading as="h1" size="xl" pt={5} pb={0}>
               Global Services Settings
             </Heading>
             <Text size="s">Subheading text here</Text>
