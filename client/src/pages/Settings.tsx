@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid, GridItem, Box, Heading, Text, VStack } from "@chakra-ui/react";
-import NavBar from "../components/NavBar";
-import ColorModeSwitch from "../components/ColorModeSwitch";
+import NavBar from "../components/Main/NavBar";
+import ColorModeSwitch from "../components/Settings/ColorModeSwitch";
 
 const Settings: React.FC = () => {
   return (
@@ -32,8 +32,6 @@ const Settings: React.FC = () => {
             <Heading as="h1" size="2xl">
               Settings
             </Heading>
-            <Text fontSize="xl">Change color mode:</Text>
-            <ColorModeSwitch />
           </VStack>
         </Box>
       </GridItem>

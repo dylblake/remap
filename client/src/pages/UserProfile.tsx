@@ -8,7 +8,7 @@ import {
   VStack,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import NavBar from "../components/NavBar";
+import NavBar from "../components/Main/NavBar";
 
 const UserProfile: React.FC = () => {
   const isXsScreen = useBreakpointValue({ base: true, sm: false });
