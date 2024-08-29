@@ -59,12 +59,12 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
       shadow = "lg";
       break;
     case "middle":
-      paddingLeft = "20px";
+      paddingLeft = "25px";
       fontSize = "md";
       shadow = "md";
       break;
     case "lower":
-      paddingLeft = "40px";
+      paddingLeft = "50px";
       fontSize = "sm";
       shadow = "sm";
       break;
@@ -72,11 +72,7 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
 
   return (
     <Tr boxShadow={shadow} bg="transparent">
-      <Td
-        paddingLeft={paddingLeft}
-        opacity={isDragging ? 0.5 : 1}
-        ref={drag} // Attach the drag source ref to the element
-      >
+      <Td paddingLeft={paddingLeft} opacity={isDragging ? 0.5 : 1} ref={drag}>
         <Flex align="center">
           <IconButton
             aria-label="Drag"
@@ -86,7 +82,7 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
             variant="ghost"
             _hover={{ bg: "transparent" }}
             cursor="grab"
-            ref={drag} // Attach the drag source ref here as well
+            ref={drag}
           />
 
           <Flex
@@ -120,7 +116,15 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
             )}
           </Flex>
         </Flex>
+        {/* line for the drop */}
+        <Box
+          borderBottom="5px solid #000"
+          mb={-4}
+          mt={3}
+          borderColor="transparent"
+        ></Box>
       </Td>
+
       <Td textAlign="center">
         <Flex justify="center">
           <DeleteIcon uuid={service.uuid} />
