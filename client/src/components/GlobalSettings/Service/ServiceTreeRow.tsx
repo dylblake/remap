@@ -44,13 +44,13 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
     }
   }, [allServices, level, service.uuid]);
 
-  const [{ isDragging }, drag, preview] = useDrag(() => ({
+  const [{ isDragging }, drag] = useDrag({
     type: serviceItemTypes.ROW,
-    item: { type: serviceItemTypes.ROW }, // Data to pass with the drag event
+    item: { id: service.uuid },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
-  }));
+  });
 
   switch (level) {
     case "upper":
@@ -75,10 +75,9 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
       <Td
         paddingLeft={paddingLeft}
         opacity={isDragging ? 0.5 : 1}
-        ref={preview}
+        ref={drag} // Attach the drag source ref to the element
       >
         <Flex align="center">
-          {/* Drag icon */}
           <IconButton
             aria-label="Drag"
             icon={<DragHandleIcon />}
@@ -87,10 +86,9 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
             variant="ghost"
             _hover={{ bg: "transparent" }}
             cursor="grab"
-            ref={drag}
+            ref={drag} // Attach the drag source ref here as well
           />
 
-          {/* Text and exp/col icon */}
           <Flex
             align="center"
             onMouseEnter={() => setIsHovered(true)}
