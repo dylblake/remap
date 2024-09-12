@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import axiosInstance from '../api/axiosInstance';
+import { fetchServices } from '../api/service';
 import { Service } from '../types/Service';
 
 export const useServices = () => {
@@ -8,17 +8,12 @@ export const useServices = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefetching, setIsRefetching] = useState(false);
 
-  const fetchServices = useCallback(async () => {
+  const fetchServicesData = useCallback(async () => {
     setIsLoading(true);
     setIsRefetching(false);
     try {
-      const response = await axiosInstance.get('/services');
-      if (Array.isArray(response.data)) {
-        setServices(response.data);
-      } else {
-        console.error('Expected an array but got:', response.data);
-        setServices([]);
-      }
+      const data = await fetchServices();
+      setServices(data);
     } catch (error) {
       setError('Failed to fetch services');
     } finally {
@@ -29,15 +24,15 @@ export const useServices = () => {
   const refetch = async () => {
     setIsRefetching(true);
     try {
-      await fetchServices();
+      await fetchServicesData();
     } finally {
       setIsRefetching(false);
     }
   };
 
   useEffect(() => {
-    fetchServices();
-  }, [fetchServices]);
+    fetchServicesData();
+  }, [fetchServicesData]);
 
   return { services, error, isLoading, isRefetching, refetch };
 };

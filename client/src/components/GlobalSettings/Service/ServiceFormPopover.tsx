@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Button,
   FormControl,
@@ -14,14 +14,19 @@ import {
   PopoverFooter,
   useToast,
 } from "@chakra-ui/react";
-import useCreateService from "../../../hooks/useCreateService";
 
-const ServiceFormPopover: React.FC = () => {
+interface ServiceFormPopoverProps {
+  onServiceCreated: (service: any) => void;
+}
+
+const ServiceFormPopover: React.FC<ServiceFormPopoverProps> = ({
+  onServiceCreated,
+}) => {
   const [name, setName] = useState("");
-  const { createService, error, isLoading, service } = useCreateService();
   const toast = useToast();
+  const initialFocusRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!name) {
@@ -35,37 +40,26 @@ const ServiceFormPopover: React.FC = () => {
       return;
     }
 
-    try {
-      await createService({
-        name,
-        order: 1,
-        type: "upper",
-      });
+    const newService = {
+      uuid: Date.now().toString(), // Generate a temporary UUID
+      name,
+      order: 1,
+      type: "upper",
+    };
 
-      if (service) {
-        toast({
-          title: "Service created.",
-          description: `Service ${service.name} was created successfully.`,
-          status: "success",
-          duration: 3000,
-          isClosable: true,
-        });
+    onServiceCreated(newService);
 
-        setName("");
-      }
-    } catch (err) {
-      toast({
-        title: "Error creating service.",
-        description: error || "An unexpected error occurred.",
-        status: "error",
-        duration: 5000,
-        isClosable: true,
-      });
-    }
+    setName("");
   };
 
+  useEffect(() => {
+    if (initialFocusRef.current) {
+      initialFocusRef.current.focus();
+    }
+  }, []);
+
   return (
-    <Popover>
+    <Popover initialFocusRef={initialFocusRef}>
       <PopoverTrigger>
         <Button colorScheme="teal" size="sm">
           Add Service
@@ -80,18 +74,14 @@ const ServiceFormPopover: React.FC = () => {
             <FormControl id="name" mb={4} isRequired>
               <FormLabel>Name</FormLabel>
               <Input
+                ref={initialFocusRef}
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
             </FormControl>
             <PopoverFooter>
-              <Button
-                type="submit"
-                colorScheme="teal"
-                isLoading={isLoading}
-                size="sm"
-              >
+              <Button type="submit" colorScheme="teal" size="sm">
                 Create
               </Button>
             </PopoverFooter>

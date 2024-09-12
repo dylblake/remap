@@ -1,0 +1,51 @@
+
+services:
+  client:
+    build:
+      context: ./client
+    environment:
+      NODE_ENV: production
+    ports:
+      - 5176:5176
+    # volumes:
+    #   - ./client:/usr/src/app
+    #   - node_modules:/usr/src/app/node_modules
+  server:
+    build:
+      context: ./server
+    environment:
+      NODE_ENV: production
+    ports:
+      - 5001:5001
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./server:/usr/src/app
+
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=glodex
+      - POSTGRES_PASSWORD_FILE=/run/secrets/db-password
+    expose:
+      - 5432
+    healthcheck:
+      test: [ "CMD", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  db-data:
+  node_modules:
+secrets:
+  db-password:
+    file: ./server/password.txt
+

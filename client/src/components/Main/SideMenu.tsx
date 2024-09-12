@@ -94,7 +94,7 @@ const SideMenu: React.FC<SideMenuProps> = ({
           <MenuLink to="/" label="Grids" icon={<FaTable />} />
           <MenuLink to="/" label="Reporting" icon={<FaFileAlt />} />
           <MenuLink
-            to="/global-settings"
+            to="/global-settings/main"
             label="Global Settings"
             icon={<FaGlobe />}
           />

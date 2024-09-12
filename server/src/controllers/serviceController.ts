@@ -48,10 +48,11 @@ export const createService = async (req: Request, res: Response) => {
 // Get all services
 export const getServices = async (_req: Request, res: Response) => {
   try {
-    const services = await pool.query('SELECT uuid, name, upper_service_id, middle_service_id, type FROM services');
-    res.status(200).json(services.rows);
+    const result = await pool.query('SELECT uuid, name, upper_service_id, middle_service_id, "order", type FROM services ORDER BY "order"');
+    console.log('Fetched services:', result.rows); // Log the fetched services
+    res.status(200).json(result.rows);
   } catch (error) {
-    console.error('Error fetching services:', error); // Detailed logging
+    console.error('Error fetching services:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
@@ -133,7 +134,6 @@ export const deleteService = async (req: Request, res: Response) => {
 export const updateServiceOrder = async (req: Request, res: Response) => {
   const client = await pool.connect();
   try {
-    // Log the incoming request body
     console.log('Received request body:', req.body);
 
     const { services } = req.body;
@@ -155,12 +155,10 @@ export const updateServiceOrder = async (req: Request, res: Response) => {
     await client.query('COMMIT');
     res.status(200).json({ message: 'Order updated successfully' });
   } catch (err) {
-    // Narrowing the error type to `Error` using `instanceof`
     if (err instanceof Error) {
       console.error('Error during updateServiceOrder:', err.message);
       res.status(500).json({ message: 'Failed to update order', error: err.message });
     } else {
-      // Handle the case where `err` is not an instance of `Error`
       console.error('Unexpected error during updateServiceOrder:', err);
       res.status(500).json({ message: 'Failed to update order', error: 'Unknown error occurred' });
     }
