@@ -45,7 +45,6 @@ const NavBar: React.FC = () => {
             icon={<FaBars />}
             onClick={onOpen}
             variant="ghost"
-            color="white"
             _hover={{ color: "green.500" }}
             boxShadow="xl"
           />
@@ -71,10 +70,11 @@ const NavBar: React.FC = () => {
 
         <IconButton
           aria-label="Toggle dark mode"
-          icon={colorMode === "dark" ? <SunIcon /> : <MoonIcon />}
+          icon={colorMode === "dark" ? <MoonIcon /> : <SunIcon />}
           onClick={toggleColorMode}
-          variant="outline"
+          variant="ghost"
           _hover={{ bg: "green.500" }}
+          borderRadius="full"
           boxShadow="xl"
           size="lg"
         />

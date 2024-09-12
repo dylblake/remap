@@ -8,25 +8,27 @@ import {
   Button,
   Box,
   useDisclosure,
-  Spinner,
-  Alert,
-  AlertIcon,
+  Flex,
+  Text,
 } from "@chakra-ui/react";
 import { FaTrash, FaThumbsUp, FaThumbsDown } from "react-icons/fa";
-import { useDeleteService } from "../../../hooks/useDeleteService";
 
 interface DeleteIconProps {
   uuid: string;
   onSuccess?: () => void;
+  onDelete: (uuid: string) => void; // Ensure this line is present
 }
 
-const DeleteIcon: React.FC<DeleteIconProps> = ({ uuid, onSuccess }) => {
-  const { deleteService, isLoading, error } = useDeleteService();
+const DeleteIcon: React.FC<DeleteIconProps> = ({
+  uuid,
+  onSuccess,
+  onDelete,
+}) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     try {
-      await deleteService(uuid);
+      onDelete(uuid); // Call the onDelete callback
       if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
@@ -35,7 +37,7 @@ const DeleteIcon: React.FC<DeleteIconProps> = ({ uuid, onSuccess }) => {
   };
 
   return (
-    <Popover isOpen={isOpen} onClose={onClose}>
+    <Popover isOpen={isOpen} onClose={onClose} placement="left">
       <PopoverTrigger>
         <Box
           as="span"
@@ -46,35 +48,30 @@ const DeleteIcon: React.FC<DeleteIconProps> = ({ uuid, onSuccess }) => {
           cursor="pointer"
           onClick={onOpen}
         >
-          {isLoading ? <Spinner size="sm" /> : <FaTrash />}
+          <FaTrash />
         </Box>
       </PopoverTrigger>
-      <PopoverContent>
-        <PopoverBody>
-          Are you sure you want to delete this service from GloDex?
+      <PopoverContent width="auto">
+        <PopoverBody m={2}>
+          <Text align="center">
+            Remove this service <br />
+            from GloDex?
+          </Text>
         </PopoverBody>
         <PopoverFooter justifyContent="flex-end">
-          <Button mr={3} onClick={onClose}>
-            <Box p={2}>
-              <FaThumbsDown />
-            </Box>
-            Do not delete
-          </Button>
-          <Button colorScheme="red" onClick={handleDelete}>
-            <Box p={2}>
-              <FaThumbsUp />
-            </Box>
-            Delete
-          </Button>
+          <Flex justify="center">
+            <Button mr={3} onClick={onClose}>
+              <Box p={2}>
+                <FaThumbsDown />
+              </Box>
+            </Button>
+            <Button colorScheme="red" onClick={handleDelete}>
+              <Box p={2}>
+                <FaThumbsUp />
+              </Box>
+            </Button>
+          </Flex>
         </PopoverFooter>
-        {error && (
-          <Box mt={4}>
-            <Alert status="error">
-              <AlertIcon />
-              {error}
-            </Alert>
-          </Box>
-        )}
       </PopoverContent>
     </Popover>
   );
