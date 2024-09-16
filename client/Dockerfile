@@ -1,30 +1,20 @@
-# syntax=docker/dockerfile:1
+FROM node:lts-alpine
+WORKDIR /opt/app
 
-# Base image: Use Node 20.16.0 on Alpine
-ARG NODE_VERSION=20.16.0
-FROM node:${NODE_VERSION}-alpine
-
-# Use production node environment by default.
-ENV NODE_ENV=production
-
-# Set the working directory inside the container (container path, not local machine)
-WORKDIR /usr/src/app
-
-# Copy package.json and package-lock.json files (from the server directory)
-COPY ./package*.json ./
+# Copy package.json and yarn.lock
+COPY package.json yarn.lock ./
 
 # Install dependencies
-RUN npm install
-RUN npm install -g vite
+RUN yarn install
+
+# Add node_modules/.bin to the PATH to ensure Vite is accessible
+ENV PATH="./node_modules/.bin:$PATH"
 
 # Copy the rest of the application files
 ADD . .
 
-# Expose the port your server listens on (5001)
+# Expose the Vite development server port
 EXPOSE 5176
 
-# Run the application as a non-root user
-USER node
-
-# Start the server using bash
-CMD ["npm", "run", "dev"]
+# Start the Vite development server
+CMD ["yarn", "dev", "--host"]

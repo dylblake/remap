@@ -16,8 +16,13 @@
     "isolatedModules": true,
     "allowJs": true,
     "jsx": "react-jsx"
-    
   },
-  "include": ["src/**/*.ts", "knexfile.ts", "migrations/**/*.ts", "seeds/**/*.ts", "node_modules/@types/**/*"],
+  "include": [
+    "src/**/*.ts",
+    "knexfile.ts",
+    "migrations/**/*.ts",
+    "seeds/**/*.ts",
+    "node_modules/@types/**/*"
+  ],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }
