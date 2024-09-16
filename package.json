@@ -4,15 +4,6 @@
   "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
   "main": "index.js",
   "private": true,
-  "workspaces": [
-    "client",
-    "server"
-  ],
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "bash start-all.sh",
-    "stop": "bash stop-all.sh"
-  },
   "author": "",
   "license": "ISC"
 }

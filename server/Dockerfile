@@ -8,7 +8,8 @@ RUN yarn install
 RUN yarn global add nodemon
 RUN yarn global add ts-node
 RUN yarn global add typescript
-
+RUN yarn global add knex
+RUN apk add --no-cache postgresql-client
 
 RUN apk add --no-cache bash
 ADD . .
