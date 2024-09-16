@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 import { Service } from '../types/Service';
 
 // Fetch all services
 export const fetchServices = async (): Promise<Service[]> => {
   try {
-    const response = await axios.get('/api/services');
+    const response = await axiosInstance.get('/services');
     return response.data;
   } catch (error) {
     throw error;
@@ -14,7 +14,7 @@ export const fetchServices = async (): Promise<Service[]> => {
 // Update the order of services
 export const updateServiceOrder = async (services: { uuid: string; order: number }[]) => {
   try {
-    await axios.put('/api/services/order', { services });
+    await axiosInstance.put('/services/order', { services });
   } catch (error) {
     throw error;
   }
@@ -23,7 +23,7 @@ export const updateServiceOrder = async (services: { uuid: string; order: number
 // Update a single service
 export const updateService = async (service: Service) => {
   try {
-    const response = await axios.put(`/api/services/${service.uuid}`, service);
+    const response = await axiosInstance.put(`/services/${service.uuid}`, service);
     return response.data;
   } catch (error) {
     throw error;
