@@ -25,6 +25,7 @@ services:
     restart: always
     volumes:
       - db-data3:/var/lib/postgresql/data
+      - ./server:/data
     environment:
       - POSTGRES_USER=glodex
       - POSTGRES_DB=glodex

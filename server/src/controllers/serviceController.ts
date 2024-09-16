@@ -2,7 +2,7 @@ import { z } from "zod";
 import { Request, Response } from "express";
 import pool from "../config/db";
 import { generateUUID } from "../utils/uuid";
-import { serviceSchema } from "../models/ServiceModel";
+import { serviceSchema } from "../models/serviceModel";
 
 // Create a new service
 export const createService = async (req: Request, res: Response) => {

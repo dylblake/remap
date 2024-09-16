@@ -4,7 +4,7 @@ console.log('Database Name:', process.env.DB_NAME); // Check if DB_NAME is corre
 console.log(JSON.stringify(process.env, null, 2)); // Print all environment variables
 module.exports = {
   development: {
-    client: 'pg',
+    client: "pg",
     connection: {
       host: process.env.DB_HOST,
       port: process.env.DB_PORT,
@@ -14,14 +14,14 @@ module.exports = {
     },
     pool: {
       min: 2,
-      max: 10,
+      max: 20,
     },
     migrations: {
-      directory: './migrations', // Path to migrations directory
+      directory: "./migrations",
+      extension: "ts",
     },
     seeds: {
       directory: './seeds', // Path to seeds directory
     },
   },
-  // Other environments...
 };
