@@ -35,3 +35,4 @@ export async function down(knex: Knex): Promise<void> {
   // Drop the services table
   await knex.schema.dropTable('services');
 }
+ 
