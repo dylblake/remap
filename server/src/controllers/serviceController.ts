@@ -97,6 +97,7 @@ export const updateService = async (req: Request, res: Response) => {
 
     const { name, type, upperServiceId, middleServiceId } = serviceData;
 
+    // Attempt to update the service with the provided UUID
     try {
       const updatedService = await pool.query(
         "UPDATE services SET name = $1, type = $2, upper_service_id = $3, middle_service_id = $4, updated_at = NOW() WHERE uuid = $5 RETURNING *",
@@ -105,7 +106,7 @@ export const updateService = async (req: Request, res: Response) => {
           type || null,
           upperServiceId || null,
           middleServiceId || null,
-          id,
+          id,  // Use UUID for identification
         ]
       );
 
@@ -117,10 +118,8 @@ export const updateService = async (req: Request, res: Response) => {
     } catch (err) {
       const dbError = err as { code?: string }; // Type assertion for dbError
       if (dbError.code === "23505") {
-        // Unique violation error code
-        res
-          .status(400)
-          .json({ message: "Service with this name already exists." });
+        // Handle unique violation
+        res.status(400).json({ message: "Service with this name already exists." });
       } else {
         console.error("Database error:", dbError);
         res.status(500).json({ message: "Server error" });
