@@ -1,4 +1,3 @@
-// src/hooks/useUndoRedo.ts
 import { useState, useCallback } from "react";
 
 interface UndoRedoState<T> {
@@ -67,9 +66,20 @@ export function useUndoRedo<T>(initialState: T) {
   );
 
   const saveChanges = useCallback(() => {
-    // This function would handle saving the present state to the server
-    console.log("Saving current state to server:", state.present);
-    // You would replace this with an actual API call or save logics
+    // Simulate an API call to save the current state
+    new Promise<void>((resolve) => {
+      console.log("Saving current state to server:", state.present);
+      resolve();
+    })
+      .then(() => {
+        console.log("Save successful!");
+      })
+      .catch((error) => {
+        console.error("Failed to save changes:", error);
+      })
+      .finally(() => {
+        console.log("Save operation completed.");
+      });
   }, [state.present]);
 
   return {

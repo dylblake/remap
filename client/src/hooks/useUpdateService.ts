@@ -1,51 +1,59 @@
 import { useState } from 'react';
-import { updateService, updateServiceOrder } from '../api/service';  // Import both functions
+import { updateServices, updateServiceOrder } from '../api/service';  // Import both functions
 import { Service } from '../types/Service';
 
 export const useUpdateService = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Function to update a single service
-  const updateServiceData = async (service: Service) => {
+  // Function to update multiple services
+  const updateServiceData = (services: Service[]) => {
     setLoading(true);
     setError(null);
 
-    try {
-      const updatedService = await updateService(service);
-      setLoading(false);
-      return updatedService;
-    } catch (err) {
-      setLoading(false);
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unexpected error occurred');
-      }
-      throw err;
-    }
+    return updateServices(services)
+      .then((updatedServices) => {
+        console.log("Services updated successfully:", updatedServices); // Add log to confirm success
+        return updatedServices;
+      })
+      .catch((err) => {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('An unexpected error occurred');
+        }
+        console.error("Error updating services:", err); // Add log to check error
+        throw err;
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   // Function to update the order of multiple services
-  const updateServiceOrderData = async (services: { uuid: string; order: number }[]) => {
+  const updateServiceOrderData = (services: { uuid: string; order: number }[]) => {
     setLoading(true);
     setError(null);
 
-    try {
-      await updateServiceOrder(services);
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unexpected error occurred');
-      }
-      throw err;
-    }
+    return updateServiceOrder(services)
+      .then(() => {
+        console.log("Service order updated successfully.");
+      })
+      .catch((err) => {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('An unexpected error occurred');
+        }
+        console.error("Error updating service order:", err);
+        throw err;
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return { updateServiceData, updateServiceOrderData, loading, error };
 };
 
-export default useUpdateService; // Export the hook
+export default useUpdateService;
