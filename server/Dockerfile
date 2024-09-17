@@ -1,5 +1,5 @@
 FROM node:lts-alpine
-WORKDIR /opt/app
+WORKDIR /usr/src/app
 
 COPY package.json .
 COPY yarn.lock .

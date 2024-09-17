@@ -28,27 +28,27 @@ const knexConfig: { [key: string]: Knex.Config } = {
       directory: './seeds', // Path to seeds directory
     },
   },
-  production: {
-    client: "pg",
-    connection: {
-      host: process.env.DB_HOST,
-      port: Number(process.env.DB_PORT),
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-    },
-    pool: {
-      min: 2,
-      max: 20,
-    },
-    migrations: {
-      directory: "./migrations",
-      extension: "ts",
-    },
-    seeds: {
-      directory: './seeds', // Path to seeds directory
-    },
-  },
+  // production: {
+  //   client: "pg",
+  //   connection: {
+  //     host: process.env.DB_HOST,
+  //     port: Number(process.env.DB_PORT),
+  //     user: process.env.DB_USER,
+  //     password: process.env.DB_PASSWORD,
+  //     database: process.env.DB_NAME,
+  //   },
+  //   pool: {
+  //     min: 2,
+  //     max: 20,
+  //   },
+  //   migrations: {
+  //     directory: "./migrations",
+  //     extension: "ts",
+  //   },
+  //   seeds: {
+  //     directory: './seeds', // Path to seeds directory
+  //   },
+  // },
 };
 
 export default knexConfig;

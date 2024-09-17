@@ -5,12 +5,16 @@ services:
     ports:
       - 5176:5176
     volumes:
-      - ./client:/usr/src/app
+      - ./client:/usr/src/app  # Sync local client folder with container
+      - /usr/src/app/node_modules
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
   server:
     build:
       context: ./server
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
     env_file:
       - ./server/.env
     ports:
@@ -19,7 +23,8 @@ services:
       db:
         condition: service_healthy
     volumes:
-      - ./server:/usr/src/app
+      - ./server:/usr/src/app  # Sync local server folder with container
+      - /usr/src/app/node_modules  # Exclude node_modules
   db:
     image: postgres
     restart: always
