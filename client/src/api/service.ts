@@ -23,12 +23,26 @@ export const updateServiceOrder = async (services: { uuid: string; order: number
 // Update multiple services
 export const updateServices = async (services: Service[]) => {
   try {
-    console.log("Sending update request for services:", services); // Add log to check services data
-    const response = await axiosInstance.put('/services/batch', { services });
-    console.log("Services update response:", response.data); // Add log to confirm success
-    return response.data;
+    
+    const sanitizedServices = services.map(service => ({
+      ...service,
+      middle_service_id: service.middle_service_id || null,  // Set undefined to null
+      upper_service_id: service.upper_service_id || null,    // Set undefined to null
+    }));
+    
+    console.log("UUIDs before API call:", services.map(s => s.uuid));
+    const requestData = { services: sanitizedServices };
+    console.log("Sending update request for services:", requestData);  // Log the sanitized request data
+
+    const response = await axiosInstance.put('/services/batch', requestData);  // Send the request
+    console.log("Services update response:", response.data);  // Log the response data
+
+    return response.data;  // Return the response data
   } catch (error) {
-    console.error("Error updating services:", error); // Add log to check error
-    throw error;
+    console.error("Error updating services:", error);  // Log any error
+    throw error;  // Re-throw the error to be handled by the calling code
   }
 };
+
+
+
