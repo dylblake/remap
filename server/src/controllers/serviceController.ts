@@ -18,17 +18,17 @@ export const createService = async (req: Request, res: Response) => {
     });
 
     // Destructure the validated service data
-    const { uuid, name, type, upperServiceId, middleServiceId } = serviceData;
+    const { uuid, name, level, upperServiceId, middleServiceId } = serviceData;
 
     // Insert new service into the database
     try {
       const newService = await pool.query(
-        `INSERT INTO services (uuid, name, type, upper_service_id, middle_service_id, created_at, updated_at)
+        `INSERT INTO services (uuid, name, level, upper_service_id, middle_service_id, created_at, updated_at)
          VALUES ($1, $2, $3, $4, $5, NOW(), NOW()) RETURNING *`,
         [
           uuid,
           name,
-          type || null, // Set `null` for optional fields if not provided
+          level || null, // Set `null` for optional fields if not provided
           upperServiceId || null, // Convert undefined to null
           middleServiceId || null, // Convert undefined to null
         ]
@@ -60,7 +60,7 @@ export const getServices = async (_req: Request, res: Response) => {
   try {
     // Fetch all services ordered by the "order" field
     const result = await pool.query(
-      `SELECT uuid, name, upper_service_id, middle_service_id, "order", type 
+      `SELECT uuid, name, upper_service_id, middle_service_id, "order", level 
        FROM services ORDER BY "order"`
     );
     console.log(JSON.stringify(result.rows, null, 2));
@@ -114,15 +114,15 @@ export const updateService = async (req: Request, res: Response) => {
       return res.status(400).json({ errors: serviceData.error.errors });
     }
 
-    const { name, type, upperServiceId, middleServiceId } = serviceData.data;
+    const { name, level, upperServiceId, middleServiceId } = serviceData.data;
 
     // Perform the update operation
     try {
       const updatedService = await pool.query(
         `UPDATE services 
-         SET name = $1, type = $2, upper_service_id = $3, middle_service_id = $4, updated_at = NOW()
+         SET name = $1, level = $2, upper_service_id = $3, middle_service_id = $4, updated_at = NOW()
          WHERE uuid = $5 RETURNING *`,
-        [name, type || null, upperServiceId || null, middleServiceId || null, id]
+        [name, level || null, upperServiceId || null, middleServiceId || null, id]
       );
 
       if (updatedService.rows.length === 0) {
@@ -159,7 +159,7 @@ export const updateBatchServices = async (req: Request, res: Response) => {
       await client.query("BEGIN"); // Begin transaction
 
       for (const service of services) {
-        const { uuid, name, type, upperServiceId, middleServiceId } = service;
+        const { uuid, name, level, upperServiceId, middleServiceId } = service;
 
         // Ensure null for undefined upper and middle service IDs
         const upperServiceIdValue = upperServiceId ?? null;
@@ -168,9 +168,9 @@ export const updateBatchServices = async (req: Request, res: Response) => {
         // Perform the update for each service
         await client.query(
           `UPDATE services 
-           SET name = $1, type = $2, upper_service_id = $3, middle_service_id = $4, updated_at = NOW() 
+           SET name = $1, level = $2, upper_service_id = $3, middle_service_id = $4, updated_at = NOW() 
            WHERE uuid = $5`,
-          [name, type, upperServiceIdValue, middleServiceIdValue, uuid]
+          [name, level, upperServiceIdValue, middleServiceIdValue, uuid]
         );
       }
 

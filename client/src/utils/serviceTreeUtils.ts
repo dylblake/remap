@@ -20,11 +20,11 @@ export const indentService = (
     let updatedServices = [...services];
   
     // Handle indenting an upper service to middle
-    if (serviceToIndent.type === "upper") {
-      // Update the type of the service to middle
+    if (serviceToIndent.level === "upper") {
+      // Update the level of the service to middle
       updatedServices = updatedServices.map((service) => {
         if (service.uuid === serviceToIndent.uuid) {
-          const updatedService = { ...service, type: "middle" as const };
+          const updatedService = { ...service, level: "middle" as const };
           affectedServices.push(updatedService); // Add to affected services
           return updatedService;
         }
@@ -36,9 +36,9 @@ export const indentService = (
       updatedServices = updatedServices.map((service) => {
         if (service.uuid === serviceToIndent.uuid) reachedNextUpper = true;
   
-        if (service.type === "upper" && reachedNextUpper) return service; // Skip other upper services
+        if (service.level === "upper" && reachedNextUpper) return service; // Skip other upper services
   
-        if (!reachedNextUpper && service.type !== "upper") {
+        if (!reachedNextUpper && service.level !== "upper") {
           const updatedService = {
             ...service,
             upper_service_id: serviceToIndent.uuid,
@@ -51,19 +51,19 @@ export const indentService = (
       });
     }
     // Handle indenting a middle service to lower
-    else if (serviceToIndent.type === "middle") {
+    else if (serviceToIndent.level === "middle") {
       const upperService = services
         .slice(0, services.indexOf(serviceToIndent))
         .reverse()
-        .find((s) => s.type === "upper");
+        .find((s) => s.level === "upper");
   
       if (upperService) {
-        // Update the type of the service to lower and set upper_service_id
+        // Update the level of the service to lower and set upper_service_id
         updatedServices = updatedServices.map((service) => {
           if (service.uuid === serviceToIndent.uuid) {
             const updatedService = {
               ...service,
-              type: "lower" as const,
+              level: "lower" as const,
               upper_service_id: upperService.uuid,
             };
             affectedServices.push(updatedService); // Add to affected services
@@ -76,9 +76,9 @@ export const indentService = (
         updatedServices = updatedServices.map((service) => {
           if (service.uuid === serviceToIndent.uuid) reachedNextMiddle = true;
   
-          if (service.type === "middle" && reachedNextMiddle) return service; // Skip other middle services
+          if (service.level === "middle" && reachedNextMiddle) return service; // Skip other middle services
   
-          if (!reachedNextMiddle && service.type === "lower") {
+          if (!reachedNextMiddle && service.level === "lower") {
             const updatedService = {
               ...service,
               middle_service_id: serviceToIndent.uuid,
@@ -109,20 +109,20 @@ export const outdentService = (
         let updatedService;
         
         // Handle moving middle service to upper level
-        if (serviceToOutdent.type === "middle") {
+        if (serviceToOutdent.level === "middle") {
           updatedService = {
             ...service,
-            type: "upper" as const,
+            level: "upper" as const,
             upper_service_id: undefined,  // Reset upper_service_id
           };
           affectedServices.push(updatedService);
           return updatedService;
         }
         // Handle moving lower service to middle level
-        else if (serviceToOutdent.type === "lower") {
+        else if (serviceToOutdent.level === "lower") {
           updatedService = {
             ...service,
-            type: "middle" as const,
+            level: "middle" as const,
             middle_service_id: undefined,  // Reset middle_service_id
           };
           affectedServices.push(updatedService);
@@ -134,7 +134,7 @@ export const outdentService = (
       if (middleChildren.includes(service)) {
         const updatedService = {
           ...service,
-          type: "middle" as const,
+          level: "middle" as const,
           middle_service_id: undefined,  // Reset middle_service_id
         };
         affectedServices.push(updatedService);

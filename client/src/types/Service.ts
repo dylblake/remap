@@ -3,6 +3,6 @@ export interface Service {
   name: string;
   upper_service_id?: string;
   middle_service_id?: string;
-  type?: 'upper' | 'middle' | 'lower';
+  level?: 'upper' | 'middle' | 'lower';
   order: number 
 }

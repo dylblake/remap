@@ -82,7 +82,10 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
       break;
   }
 
-  const canIndent = level !== "lower" && !isFirstChild(service, allServices);
+  const canIndent =
+    level !== "lower" &&
+    !isFirstChild(service, allServices) &&
+    service.order !== 1;
   const canOutdent = level !== "upper";
 
   return (

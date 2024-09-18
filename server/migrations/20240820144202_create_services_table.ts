@@ -9,17 +9,17 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('upper_service_id').nullable(); // Optional UUID reference
     table.uuid('middle_service_id').nullable(); // Optional UUID reference
     table.integer('order').defaultTo(0).notNullable(); // Order column with a default value of 0
-    table.text('type').notNullable(); // Service type as text
+    table.text('level').notNullable(); // Service level as text
 
     table.timestamp('created_at').defaultTo(knex.fn.now()); // Creation timestamp
     table.timestamp('updated_at').defaultTo(knex.fn.now()); // Update timestamp
   });
 
-  // Add check constraint on the "type" column to ensure valid values
+  // Add check constraint on the "level" column to ensure valid values
   await knex.raw(`
     ALTER TABLE services
-    ADD CONSTRAINT services_type_check
-    CHECK (type IN ('upper', 'middle', 'lower'));
+    ADD CONSTRAINT services_level_check
+    CHECK (level IN ('upper', 'middle', 'lower'));
   `);
 
   console.log('Services table created successfully');
@@ -29,7 +29,7 @@ export async function down(knex: Knex): Promise<void> {
   // Drop the check constraint
   await knex.raw(`
     ALTER TABLE services
-    DROP CONSTRAINT IF EXISTS services_type_check;
+    DROP CONSTRAINT IF EXISTS services_level_check;
   `);
 
   // Drop the services table

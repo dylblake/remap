@@ -259,7 +259,7 @@ const ServiceTree: React.FC = () => {
                 service={service}
                 isExpanded={expandedServices.has(service.uuid)}
                 onToggle={() => handleToggle(service.uuid)}
-                level={service.type || "upper"} // Default to "upper" if service.type is undefined
+                level={service.level || "upper"} // Default to "upper" if service.level is undefined
                 allServices={services}
                 onDelete={handleDeleteService}
                 onIndent={() => handleIndentService(service.uuid)}
