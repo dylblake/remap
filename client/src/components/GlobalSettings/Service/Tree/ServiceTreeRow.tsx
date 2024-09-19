@@ -8,6 +8,10 @@ import {
 } from "@chakra-ui/icons";
 import { Service } from "../../../../types/Service";
 import DeleteIcon from "../DeleteIcon";
+import {
+  canIndent,
+  canOutdent,
+} from "../../../../utils/serviceIndentOutdentUtils";
 
 interface ServiceTreeRowProps {
   service: Service;
@@ -49,21 +53,6 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
     }
   }, [allServices, level, service.uuid]);
 
-  const isFirstChild = (service: Service, allServices: Service[]) => {
-    if (service.upper_service_id) {
-      const siblings = allServices.filter(
-        (s) => s.upper_service_id === service.upper_service_id
-      );
-      return siblings[0]?.uuid === service.uuid;
-    } else if (service.middle_service_id) {
-      const siblings = allServices.filter(
-        (s) => s.middle_service_id === service.middle_service_id
-      );
-      return siblings[0]?.uuid === service.uuid;
-    }
-    return false;
-  };
-
   switch (level) {
     case "upper":
       paddingLeft = "0px";
@@ -81,12 +70,6 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
       shadow = "sm";
       break;
   }
-
-  const canIndent =
-    level !== "lower" &&
-    !isFirstChild(service, allServices) &&
-    service.order !== 1;
-  const canOutdent = level !== "upper";
 
   return (
     <Tr boxShadow={shadow} bg="transparent">
@@ -108,7 +91,7 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
               cursor={onToggle ? "pointer" : "default"}
-              onClick={onToggle} // Ensure onToggle is called on click
+              onClick={onToggle}
             >
               <Text
                 fontSize={fontSize}
@@ -128,10 +111,11 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
                   variant="standard"
                   color={isHovered ? "green.500" : "inherit"}
                   _hover={{ bg: "green.500", color: "white" }}
-                  onClick={onToggle} // Call onToggle when the chevron is clicked
+                  onClick={onToggle}
                 />
               ) : undefined}
             </Flex>
+
             <Box
               borderColor="gray.800"
               outline="1px solid gray"
@@ -149,9 +133,9 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
                 borderLeftRadius="8px"
                 borderRightRadius="0px"
                 _hover={{ color: "white", bg: "green.500" }}
-                onClick={() => canOutdent && onOutdent(service.uuid)} // Use onClick
+                onClick={() => canOutdent(level) && onOutdent(service.uuid)}
                 maxH="18px"
-                isDisabled={!canOutdent}
+                isDisabled={!canOutdent(level)}
               />
               <IconButton
                 aria-label="indent"
@@ -161,9 +145,12 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
                 borderRightRadius="8px"
                 borderLeftRadius="0px"
                 _hover={{ color: "white", bg: "green.500" }}
-                onClick={() => canIndent && onIndent(service.uuid)} // Use onClick
+                onClick={() =>
+                  canIndent(service, level, allServices) &&
+                  onIndent(service.uuid)
+                }
                 maxH="18px"
-                isDisabled={!canIndent}
+                isDisabled={!canIndent(service, level, allServices)}
               />
             </Box>
           </Flex>
