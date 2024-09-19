@@ -20,8 +20,7 @@ import { useDeleteService } from "../../../../hooks/useDeleteService";
 import {
   indentService,
   outdentService,
-  getMiddleChildren,
-} from "../../../../utils/serviceTreeUtils";
+} from "../../../../utils/serviceIndentOutdentUtils";
 import { Service } from "../../../../types/Service";
 
 const ServiceTree: React.FC = () => {
@@ -34,13 +33,13 @@ const ServiceTree: React.FC = () => {
   } = useServices();
 
   /* --------------------------STATE VARIABLES-------------------------- */
-  const [services, setServices] = useState<Service[]>([]);
+  const [allServicesState, setAllServicesState] = useState<Service[]>([]);
   const [modifiedServices, setModifiedServices] = useState<Set<string>>(
     new Set()
   );
   const [deletedServices, setDeletedServices] = useState<Set<string>>(
     new Set()
-  ); // State for deleted services
+  );
   const [expandedServices, setExpandedServices] = useState<Set<string>>(
     new Set()
   );
@@ -51,10 +50,10 @@ const ServiceTree: React.FC = () => {
   const { deleteService } = useDeleteService(); // Use the delete service hook
 
   useEffect(() => {
-    setServices([...initialServices]); // Remove sorting after initial load
+    setAllServicesState([...initialServices]); // Initialize the combined state
   }, [initialServices]);
 
-  const isAllExpanded = expandedServices.size === services.length;
+  const isAllExpanded = expandedServices.size === allServicesState.length;
 
   const { updateServiceData } = useUpdateService();
 
@@ -75,7 +74,9 @@ const ServiceTree: React.FC = () => {
     try {
       // Collect modified services
       const servicesToUpdate = Array.from(modifiedServices)
-        .map((uuid) => services.find((service) => service.uuid === uuid))
+        .map((uuid) =>
+          allServicesState.find((service) => service.uuid === uuid)
+        )
         .filter((service) => service !== undefined) as Service[];
 
       // Update modified services
@@ -84,7 +85,7 @@ const ServiceTree: React.FC = () => {
       }
 
       // Create new services
-      for (const service of services) {
+      for (const service of allServicesState) {
         if (!service.uuid) {
           await createService(service); // API call to create
         }
@@ -103,7 +104,7 @@ const ServiceTree: React.FC = () => {
       setIsSaving(false);
     }
   }, [
-    services,
+    allServicesState,
     deletedServices,
     createService,
     updateServiceData,
@@ -113,13 +114,13 @@ const ServiceTree: React.FC = () => {
   ]);
   /* --------------------------HANDLE TOGGLE EXPAND/COLLAPSE-------------------------- */
   const handleToggleExpandCollapse = useCallback(() => {
-    if (expandedServices.size === services.length) {
+    if (expandedServices.size === allServicesState.length) {
       setExpandedServices(new Set()); // Collapse all
     } else {
-      const allIds = services.map((service) => service.uuid);
+      const allIds = allServicesState.map((service) => service.uuid);
       setExpandedServices(new Set(allIds)); // Expand all
     }
-  }, [expandedServices, services]);
+  }, [expandedServices, allServicesState]);
 
   /* --------------------------HANDLE UNDO-------------------------- */
   const handleUndo = useCallback(() => {
@@ -135,14 +136,14 @@ const ServiceTree: React.FC = () => {
 
   /* --------------------------HANDLE CREATE SERVICE-------------------------- */
   const handleCreateService = useCallback((newService: Service) => {
-    setServices((prevServices) =>
+    setAllServicesState((prevServices) =>
       [...prevServices, newService].sort((a, b) => a.order - b.order)
     );
   }, []);
 
   /* --------------------------HANDLE DELETE SERVICE-------------------------- */
   const handleDeleteService = useCallback((uuid: string) => {
-    setServices((prevServices) =>
+    setAllServicesState((prevServices) =>
       prevServices.filter((service) => service.uuid !== uuid)
     );
     setDeletedServices((prevDeleted) => new Set(prevDeleted).add(uuid)); // Track deleted services
@@ -151,73 +152,58 @@ const ServiceTree: React.FC = () => {
   /* --------------------------HANDLE INDENT-------------------------- */
   const handleIndentService = useCallback(
     (uuid: string) => {
-      setServices((prevServices) => {
+      setAllServicesState((prevServices) => {
         const serviceToIndent = prevServices.find(
           (service) => service.uuid === uuid
         );
         if (!serviceToIndent) return prevServices;
 
-        // Debugging logs
-        console.log("UUID to indent:", uuid);
-        console.log(
-          "Current upper_service_id:",
-          serviceToIndent.upper_service_id
-        );
-        console.log(
-          "Current middle_service_id:",
-          serviceToIndent.middle_service_id
-        );
-
-        // Call the function that handles indent logic
         const { updatedServices, affectedServices } = indentService(
           prevServices,
           serviceToIndent
         );
 
-        // Mark all affected services as modified (so they can be sent on save)
+        // Add affected services to modifiedServices
         setModifiedServices((prevModified) => {
           const updatedModified = new Set(prevModified);
-          affectedServices.forEach((service) => {
-            updatedModified.add(service.uuid);
-          });
+          affectedServices.forEach((service) =>
+            updatedModified.add(service.uuid)
+          );
           return updatedModified;
         });
 
         return updatedServices;
       });
     },
-    [setServices, setModifiedServices]
+    [setAllServicesState, setModifiedServices]
   );
-
   /* --------------------------HANDLE OUTDENT-------------------------- */
   const handleOutdentService = useCallback(
     (uuid: string) => {
-      setServices((prevServices) => {
+      setAllServicesState((prevServices) => {
         const serviceToOutdent = prevServices.find(
           (service) => service.uuid === uuid
         );
         if (!serviceToOutdent) return prevServices;
 
-        // Call the outdent logic
         const { updatedServices, affectedServices } = outdentService(
           prevServices,
-          serviceToOutdent,
-          getMiddleChildren
+          serviceToOutdent
         );
 
-        // Mark affected services as modified
+        // Add affected services to modifiedServices
         setModifiedServices((prevModified) => {
           const updatedModified = new Set(prevModified);
-          affectedServices.forEach((service) => {
-            updatedModified.add(service.uuid);
-          });
+          affectedServices.forEach((service) =>
+            updatedModified.add(service.uuid)
+          );
           return updatedModified;
         });
 
         return updatedServices;
       });
     },
-    [setServices, setModifiedServices, getMiddleChildren]
+    [setAllServicesState, setModifiedServices]
   );
 
   /* -------------------------------------------------------------------------- */
@@ -244,7 +230,7 @@ const ServiceTree: React.FC = () => {
           <AlertIcon />
           Error: {error}
         </Alert>
-      ) : services.length > 0 ? (
+      ) : allServicesState.length > 0 ? (
         <Table variant="simple">
           <Thead>
             <Tr>
@@ -253,14 +239,14 @@ const ServiceTree: React.FC = () => {
           </Thead>
           <Tbody>
             {/* Render all services in their original array order */}
-            {services.map((service) => (
+            {allServicesState.map((service) => (
               <ServiceTreeRow
                 key={service.uuid}
                 service={service}
                 isExpanded={expandedServices.has(service.uuid)}
                 onToggle={() => handleToggle(service.uuid)}
-                level={service.level || "upper"} // Default to "upper" if service.level is undefined
-                allServices={services}
+                level={service.level || "upper"} // Default to "upper" if service.type is undefined
+                allServices={allServicesState}
                 onDelete={handleDeleteService}
                 onIndent={() => handleIndentService(service.uuid)}
                 onOutdent={() => handleOutdentService(service.uuid)}
