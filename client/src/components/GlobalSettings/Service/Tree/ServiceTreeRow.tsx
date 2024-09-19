@@ -18,7 +18,7 @@ interface ServiceTreeRowProps {
   isExpanded?: boolean;
   onToggle?: () => void;
   level: "upper" | "middle" | "lower";
-  allServices: Service[];
+  allServices: Service[]; // allServicesState from the tree
   onDelete: (uuid: string) => void;
   onIndent: (uuid: string) => void;
   onOutdent: (uuid: string) => void;
@@ -36,12 +36,18 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [hasChildren, setHasChildren] = useState(false);
+  const [canIndentState, setCanIndentState] = useState(false);
+  const [canOutdentState, setCanOutdentState] = useState(false);
 
   let paddingLeft;
   let fontSize;
   let shadow;
 
+  // Update the indent and outdent state based on allServices
   useEffect(() => {
+    setCanIndentState(canIndent(service, level, allServices));
+    setCanOutdentState(canOutdent(level));
+
     if (level === "upper") {
       setHasChildren(
         allServices.some((s) => s.upper_service_id === service.uuid)
@@ -133,9 +139,9 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
                 borderLeftRadius="8px"
                 borderRightRadius="0px"
                 _hover={{ color: "white", bg: "green.500" }}
-                onClick={() => canOutdent(level) && onOutdent(service.uuid)}
+                onClick={() => canOutdentState && onOutdent(service.uuid)}
                 maxH="18px"
-                isDisabled={!canOutdent(level)}
+                isDisabled={!canOutdentState}
               />
               <IconButton
                 aria-label="indent"
@@ -145,10 +151,7 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
                 borderRightRadius="8px"
                 borderLeftRadius="0px"
                 _hover={{ color: "white", bg: "green.500" }}
-                onClick={() =>
-                  canIndent(service, level, allServices) &&
-                  onIndent(service.uuid)
-                }
+                onClick={() => canIndentState && onIndent(service.uuid)}
                 maxH="18px"
                 isDisabled={!canIndent(service, level, allServices)}
               />
