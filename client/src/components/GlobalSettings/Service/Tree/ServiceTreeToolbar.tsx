@@ -47,7 +47,7 @@ const ServiceTreeToolbar: React.FC<ServiceTreeToolbarProps> = ({
   }, [onSave, toast]);
 
   //configure
-  const toolbarBg = colorMode === "dark" ? "gray.700" : "gray.100";
+  const toolbarBg = colorMode === "dark" ? "gray.700" : "gray.50";
   const borderColor = colorMode === "dark" ? "gray.600" : "gray.1000";
   const borderWidth = colorMode === "dark" ? "1px" : "3px";
 
