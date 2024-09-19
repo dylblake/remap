@@ -1,33 +1,33 @@
 // GloDex/client/src/utils/serviceTreeUtils.ts
 import { Service } from "../types/Service";
 
-/*-----------------------------------IS FIRST CHILD-----------------------------------*/
-export const isFirstChild = (service: Service, allServices: Service[]) => {
-  if (service.upper_service_id) {
-    const siblings = allServices.filter(
-      (s) => s.upper_service_id === service.upper_service_id
-    );
-    return siblings[0]?.uuid === service.uuid;
-  } else if (service.middle_service_id) {
-    const siblings = allServices.filter(
-      (s) => s.middle_service_id === service.middle_service_id
-    );
-    return siblings[0]?.uuid === service.uuid;
-  }
-  return false;
-};
-
 /*-----------------------------------CAN INDENT-----------------------------------*/
 export const canIndent = (
   service: Service,
   level: string,
   allServices: Service[]
 ) => {
-  return (
-    level !== "lower" &&
-    !isFirstChild(service, allServices) &&
-    service.order !== 1
+  //First service in the order can't indent
+  const currentServiceIndex = allServices.findIndex(
+    (s) => s.uuid === service.uuid
   );
+  if (currentServiceIndex === 0) {
+    return false;
+  }
+
+  //Lower-level services can't indent
+  if (level === "lower") {
+    return false;
+  }
+
+  // Middle-level services directly below an upper service can't indent
+  const previousService = allServices[currentServiceIndex - 1];
+  if (level === "middle" && previousService?.level === "upper") {
+    return false;
+  }
+
+  // All other services can indent
+  return true;
 };
 
 /*-----------------------------------CAN OUTDENT-----------------------------------*/
@@ -143,7 +143,7 @@ export const indentService = (
   // Return the updated service list and the affected services
   return { updatedServices, affectedServices };
 };
-/*-----------------------------------OUTDENT SERVICE-----------------------------------*/
+
 /*-----------------------------------OUTDENT SERVICE-----------------------------------*/
 export const outdentService = (
   services: Service[],
