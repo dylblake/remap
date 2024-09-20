@@ -154,13 +154,13 @@ export const outdentService = (
 
   // ----- LOWER -> MIDDLE OUTDENT
   if (serviceToOutdent.level === "lower") {
-    // Change the level of service A to middle
+    // Change the level of the service to middle and null middle_service_id
     updatedServices = updatedServices.map((service) => {
       if (service.uuid === serviceToOutdent.uuid) {
         const updatedService = {
           ...service,
           level: "middle" as const,
-          middle_service_id: null, // Clear middle_service_id
+          middle_service_id: null,
         };
         affectedServices.push(updatedService); // Tracks modified service
         return updatedService;
@@ -186,38 +186,50 @@ export const outdentService = (
 
   // ----- MIDDLE -> UPPER OUTDENT
   if (serviceToOutdent.level === "middle") {
-    const serviceToOutdentOrder = serviceToOutdent.order;
-
-    // Find all lower rows that need to outdent as well
-    updatedServices = updatedServices.map((service) => {
-      if (service.order > serviceToOutdentOrder && service.level === "lower") {
-        const updatedService = {
-          ...service,
-          level: "middle" as const, // Move from lower to middle
-          middle_service_id: null, // Clear middle_service_id
-          upper_service_id: serviceToOutdent.uuid, // Set upper_service_id to the outdented service's UUID
-        };
-        affectedServices.push(updatedService); // Tracks modified services
-        return updatedService;
-      }
-      return service;
-    });
-
-    // Update service A to become upper level
+    // Update the middle service to become upper level
     updatedServices = updatedServices.map((service) => {
       if (service.uuid === serviceToOutdent.uuid) {
         const updatedService = {
           ...service,
           level: "upper" as const,
           upper_service_id: null, // Clear upper_service_id
+          middle_service_id: null, // Clear middle_service_id
         };
-        affectedServices.push(updatedService); // Tracks modified service
+        affectedServices.push(updatedService); // Track modified service
         return updatedService;
       }
       return service;
     });
-  }
 
+    // Only affect the immediate lower services of the outdented middle service
+    for (
+      let i = services.indexOf(serviceToOutdent) + 1;
+      i < services.length;
+      i++
+    ) {
+      const currentService = services[i];
+
+      // Stop if we encounter the next middle or upper service
+      if (
+        currentService.level === "middle" ||
+        currentService.level === "upper"
+      ) {
+        break;
+      }
+
+      // If it's a lower service, move it to middle level under the outdented service
+      if (currentService.level === "lower") {
+        const updatedService = {
+          ...currentService,
+          level: "middle" as const, // Promote to middle
+          middle_service_id: null, // Clear middle_service_id
+          upper_service_id: serviceToOutdent.uuid, // Set new upper_service_id
+        };
+        affectedServices.push(updatedService); // Track modified service
+        updatedServices[i] = updatedService; // Update the service in the list
+      }
+    }
+  }
   // Return the updated services and affected services
   return { updatedServices, affectedServices };
 };
