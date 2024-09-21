@@ -39,7 +39,9 @@ export const createService = async (req: Request, res: Response) => {
       const dbError = err as { code?: string }; // Type assertion for database error
       if (dbError.code === "23505") {
         // Unique violation error handling
-        res.status(400).json({ message: "Service with this name already exists." });
+        res
+          .status(400)
+          .json({ message: "Service with this name already exists." });
       } else {
         console.error("Database error:", dbError);
         res.status(500).json({ message: "Server error" });
@@ -122,7 +124,13 @@ export const updateService = async (req: Request, res: Response) => {
         `UPDATE services 
          SET name = $1, level = $2, upper_service_id = $3, middle_service_id = $4, updated_at = NOW()
          WHERE uuid = $5 RETURNING *`,
-        [name, level || null, upperServiceId || null, middleServiceId || null, id]
+        [
+          name,
+          level || null,
+          upperServiceId || null,
+          middleServiceId || null,
+          id,
+        ]
       );
 
       if (updatedService.rows.length === 0) {
@@ -133,7 +141,9 @@ export const updateService = async (req: Request, res: Response) => {
     } catch (err) {
       const dbError = err as { code?: string };
       if (dbError.code === "23505") {
-        res.status(400).json({ message: "Service with this name already exists." });
+        res
+          .status(400)
+          .json({ message: "Service with this name already exists." });
       } else {
         console.error("Database error:", dbError);
         res.status(500).json({ message: "Server error" });
@@ -159,11 +169,13 @@ export const updateBatchServices = async (req: Request, res: Response) => {
       await client.query("BEGIN"); // Begin transaction
 
       for (const service of services) {
-        const { uuid, name, level, upperServiceId, middleServiceId } = service;
+        // Use the same field names as in the request body
+        const { uuid, name, level, upper_service_id, middle_service_id } =
+          service;
 
         // Ensure null for undefined upper and middle service IDs
-        const upperServiceIdValue = upperServiceId ?? null;
-        const middleServiceIdValue = middleServiceId ?? null;
+        const upperServiceIdValue = upper_service_id ?? null;
+        const middleServiceIdValue = middle_service_id ?? null;
 
         // Perform the update for each service
         await client.query(
@@ -245,7 +257,9 @@ export const updateServiceOrder = async (req: Request, res: Response) => {
     // Check if the error is an instance of Error
     if (err instanceof Error) {
       console.error("Error during updateServiceOrder:", err.message);
-      res.status(500).json({ message: "Failed to update order", error: err.message });
+      res
+        .status(500)
+        .json({ message: "Failed to update order", error: err.message });
     } else {
       console.error("Unexpected error during updateServiceOrder:", err);
       res.status(500).json({
