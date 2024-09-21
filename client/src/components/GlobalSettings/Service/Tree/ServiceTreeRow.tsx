@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Tr, Td, Flex, Text, IconButton, Box } from "@chakra-ui/react";
 import {
   ChevronDownIcon,
@@ -17,7 +17,6 @@ interface ServiceTreeRowProps {
   service: Service;
   isExpanded?: boolean;
   onToggle?: () => void;
-  level: "upper" | "middle" | "lower";
   allServices: Service[]; // allServicesState from the tree
   onDelete: (uuid: string) => void;
   onIndent: (uuid: string) => void;
@@ -28,57 +27,38 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
   service,
   isExpanded = false,
   onToggle,
-  level,
   allServices,
   onDelete,
   onIndent,
   onOutdent,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [hasChildren, setHasChildren] = useState(false);
-  const [canIndentState, setCanIndentState] = useState(false);
-  const [canOutdentState, setCanOutdentState] = useState(false);
 
-  let paddingLeft;
-  let fontSize;
-  let shadow;
+  // Determine if the service has children
+  const hasChildren = allServices.some(
+    (s) =>
+      (service.level === "upper" &&
+        s.level === "middle" &&
+        s.upper_service_id === service.uuid) ||
+      (service.level === "middle" &&
+        s.level === "lower" &&
+        s.middle_service_id === service.uuid)
+  );
 
-  // Update the indent and outdent state based on allServices
-  useEffect(() => {
-    setCanIndentState(canIndent(service, level, allServices));
-    setCanOutdentState(canOutdent(level));
+  // Indentation based on level
+  const level =
+    service.level === "upper" ? 0 : service.level === "middle" ? 1 : 2;
+  const paddingLeft = `${level * 20}px`;
 
-    if (level === "upper") {
-      setHasChildren(
-        allServices.some((s) => s.upper_service_id === service.uuid)
-      );
-    } else if (level === "middle") {
-      setHasChildren(
-        allServices.some((s) => s.middle_service_id === service.uuid)
-      );
-    }
-  }, [allServices, level, service.uuid]);
+  // Determine the level as a string
+  const levelStr = service.level || "upper";
 
-  switch (level) {
-    case "upper":
-      paddingLeft = "0px";
-      fontSize = "lg";
-      shadow = "lg";
-      break;
-    case "middle":
-      paddingLeft = "25px";
-      fontSize = "md";
-      shadow = "md";
-      break;
-    case "lower":
-      paddingLeft = "50px";
-      fontSize = "sm";
-      shadow = "sm";
-      break;
-  }
+  // Use utility functions to determine if the service can be indented or outdented
+  const canIndentState = canIndent(service, levelStr, allServices);
+  const canOutdentState = canOutdent(levelStr);
 
   return (
-    <Tr boxShadow={shadow} bg="transparent">
+    <Tr bg="transparent">
       <Td paddingLeft={paddingLeft}>
         <Flex align="center" justify="space-between">
           <Flex align="center">
@@ -96,11 +76,22 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
               align="center"
               onMouseEnter={() => setIsHovered(true)}
               onMouseLeave={() => setIsHovered(false)}
-              cursor={onToggle ? "pointer" : "default"}
-              onClick={onToggle}
             >
+              {hasChildren ? (
+                <IconButton
+                  aria-label="Expand/Collapse"
+                  icon={isExpanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
+                  size="sm"
+                  variant="ghost"
+                  onClick={onToggle}
+                  mr={2}
+                />
+              ) : (
+                // Add a placeholder to align the text
+                <Box width="32px" mr={2} />
+              )}
               <Text
-                fontSize={fontSize}
+                fontSize="md"
                 fontWeight="medium"
                 color={isHovered ? "green.500" : "inherit"}
                 display="inline-flex"
@@ -108,18 +99,6 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
               >
                 {service.name}
               </Text>
-              {onToggle && hasChildren ? (
-                <IconButton
-                  aria-label="Expand/Collapse"
-                  icon={isExpanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
-                  size="s"
-                  ml={2}
-                  variant="standard"
-                  color={isHovered ? "green.500" : "inherit"}
-                  _hover={{ bg: "green.500", color: "white" }}
-                  onClick={onToggle}
-                />
-              ) : undefined}
             </Flex>
 
             <Box
@@ -153,7 +132,7 @@ const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
                 _hover={{ color: "white", bg: "green.500" }}
                 onClick={() => canIndentState && onIndent(service.uuid)}
                 maxH="18px"
-                isDisabled={!canIndent(service, level, allServices)}
+                isDisabled={!canIndentState}
               />
             </Box>
           </Flex>
