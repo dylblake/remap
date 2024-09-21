@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, forwardRef } from "react";
 import { Tr, Td, Flex, Text, IconButton, Box } from "@chakra-ui/react";
 import {
   ChevronDownIcon,
@@ -8,139 +8,136 @@ import {
 } from "@chakra-ui/icons";
 import { Service } from "../../../../types/Service";
 import DeleteIcon from "../DeleteIcon";
-import {
-  canIndent,
-  canOutdent,
-} from "../../../../utils/serviceIndentOutdentUtils";
 
 interface ServiceTreeRowProps {
   service: Service;
+  hasChildren: boolean;
   isExpanded?: boolean;
   onToggle?: () => void;
-  allServices: Service[]; // allServicesState from the tree
   onDelete: (uuid: string) => void;
-  onIndent: (uuid: string) => void;
-  onOutdent: (uuid: string) => void;
+  onIndent: () => void;
+  onOutdent: () => void;
+  canIndent: boolean;
+  canOutdent: boolean;
 }
 
-const ServiceTreeRow: React.FC<ServiceTreeRowProps> = ({
-  service,
-  isExpanded = false,
-  onToggle,
-  allServices,
-  onDelete,
-  onIndent,
-  onOutdent,
-}) => {
-  const [isHovered, setIsHovered] = useState(false);
+const ServiceTreeRow = forwardRef<HTMLTableRowElement, ServiceTreeRowProps>(
+  (
+    {
+      service,
+      hasChildren,
+      isExpanded = false,
+      onToggle,
+      onDelete,
+      onIndent,
+      onOutdent,
+      canIndent,
+      canOutdent,
+    },
+    ref
+  ) => {
+    const [isHovered, setIsHovered] = useState(false);
 
-  // Determine if the service has children
-  const hasChildren = allServices.some(
-    (s) =>
-      (service.level === "upper" &&
-        s.level === "middle" &&
-        s.upper_service_id === service.uuid) ||
-      (service.level === "middle" &&
-        s.level === "lower" &&
-        s.middle_service_id === service.uuid)
-  );
+    // Indentation based on level
+    const level =
+      service.level === "upper" ? 0 : service.level === "middle" ? 1 : 2;
+    const paddingLeft = `${level * 20}px`;
 
-  // Indentation based on level
-  const level =
-    service.level === "upper" ? 0 : service.level === "middle" ? 1 : 2;
-  const paddingLeft = `${level * 20}px`;
+    return (
+      <Tr bg="transparent" ref={ref}>
+        <Td paddingLeft={paddingLeft}>
+          <Flex align="center" justify="space-between">
+            {/* Left Part */}
+            <Flex align="center">
+              {/* Drag handle icon */}
+              <IconButton
+                aria-label="Drag"
+                icon={<DragHandleIcon />}
+                size="xs"
+                mr={3}
+                variant="ghost"
+                _hover={{ bg: "transparent" }}
+                cursor="grab"
+              />
 
-  // Determine the level as a string
-  const levelStr = service.level || "upper";
-
-  // Use utility functions to determine if the service can be indented or outdented
-  const canIndentState = canIndent(service, levelStr, allServices);
-  const canOutdentState = canOutdent(levelStr);
-
-  return (
-    <Tr bg="transparent">
-      <Td paddingLeft={paddingLeft}>
-        <Flex align="center" justify="space-between">
-          <Flex align="center">
-            <IconButton
-              aria-label="Drag"
-              icon={<DragHandleIcon />}
-              size="xs"
-              mr={3}
-              variant="ghost"
-              _hover={{ bg: "transparent" }}
-              cursor="grab"
-            />
-
-            <Flex
-              align="center"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            >
-              {hasChildren ? (
-                <IconButton
-                  aria-label="Expand/Collapse"
-                  icon={isExpanded ? <ChevronDownIcon /> : <ChevronRightIcon />}
-                  size="sm"
-                  variant="ghost"
-                  onClick={onToggle}
-                  mr={2}
-                />
-              ) : (
-                // Add a placeholder to align the text
-                <Box width="32px" mr={2} />
-              )}
-              <Text
-                fontSize="md"
-                fontWeight="medium"
-                color={isHovered ? "green.500" : "inherit"}
-                display="inline-flex"
-                alignItems="center"
+              <Flex
+                align="center"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
               >
-                {service.name}
-              </Text>
+                {hasChildren ? (
+                  // Expand/collapse button
+                  <IconButton
+                    aria-label="Expand/Collapse"
+                    icon={
+                      isExpanded ? <ChevronDownIcon /> : <ChevronRightIcon />
+                    }
+                    size="sm"
+                    variant="ghost"
+                    onClick={onToggle}
+                    mr={2}
+                  />
+                ) : (
+                  // Placeholder to align text
+                  <Box width="32px" mr={2} />
+                )}
+                {/* Service name */}
+                <Text
+                  fontSize="md"
+                  fontWeight="medium"
+                  color={isHovered ? "green.500" : "inherit"}
+                  display="inline-flex"
+                  alignItems="center"
+                >
+                  {service.name}
+                </Text>
+              </Flex>
             </Flex>
-
-            <Box
-              borderColor="gray.800"
-              outline="1px solid gray"
-              borderRadius="8px"
-              display="flex"
-              alignItems="center"
-              maxH="18px"
-              ml={3}
-            >
-              <IconButton
-                aria-label="outdent"
-                icon={<ChevronLeftIcon />}
-                size="xs"
-                variant="ghost"
-                borderLeftRadius="8px"
-                borderRightRadius="0px"
-                _hover={{ color: "white", bg: "green.500" }}
-                onClick={() => canOutdentState && onOutdent(service.uuid)}
+            {/* Right Part */}
+            <Flex align="center">
+              {/* Indent/Outdent buttons */}
+              <Box
+                borderColor="gray.800"
+                outline="1px solid gray"
+                borderRadius="8px"
+                display="flex"
+                alignItems="center"
                 maxH="18px"
-                isDisabled={!canOutdentState}
-              />
-              <IconButton
-                aria-label="indent"
-                icon={<ChevronRightIcon />}
-                size="xs"
-                variant="ghost"
-                borderRightRadius="8px"
-                borderLeftRadius="0px"
-                _hover={{ color: "white", bg: "green.500" }}
-                onClick={() => canIndentState && onIndent(service.uuid)}
-                maxH="18px"
-                isDisabled={!canIndentState}
-              />
-            </Box>
+                mr={2}
+              >
+                <IconButton
+                  aria-label="Outdent"
+                  icon={<ChevronLeftIcon />}
+                  size="xs"
+                  variant="ghost"
+                  borderLeftRadius="8px"
+                  borderRightRadius="0px"
+                  _hover={{ color: "white", bg: "green.500" }}
+                  onClick={onOutdent}
+                  maxH="18px"
+                  isDisabled={!canOutdent}
+                />
+                <IconButton
+                  aria-label="Indent"
+                  icon={<ChevronRightIcon />}
+                  size="xs"
+                  variant="ghost"
+                  borderRightRadius="8px"
+                  borderLeftRadius="0px"
+                  _hover={{ color: "white", bg: "green.500" }}
+                  onClick={onIndent}
+                  maxH="18px"
+                  isDisabled={!canIndent}
+                />
+              </Box>
+              {/* Delete icon */}
+              <DeleteIcon uuid={service.uuid} onDelete={onDelete} />
+            </Flex>
           </Flex>
-          <DeleteIcon uuid={service.uuid} onDelete={onDelete} />
-        </Flex>
-      </Td>
-    </Tr>
-  );
-};
+        </Td>
+      </Tr>
+    );
+  }
+);
 
 export default ServiceTreeRow;

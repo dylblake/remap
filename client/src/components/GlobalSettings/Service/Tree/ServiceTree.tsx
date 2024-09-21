@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Table,
   Thead,
@@ -18,8 +18,19 @@ import useCreateService from "../../../../hooks/useCreateService";
 import useUpdateService from "../../../../hooks/useUpdateService";
 import { useDeleteService } from "../../../../hooks/useDeleteService";
 import { Service } from "../../../../types/Service";
+import {
+  indentService,
+  outdentService,
+  canIndent,
+  canOutdent,
+} from "../../../../utils/serviceIndentOutdentUtils";
+import {
+  updateExpandedServicesAfterIndentOutdent,
+  serviceHasChildren,
+} from "../../../../utils/serviceExpandCollapseUtils";
 
 const ServiceTree: React.FC = () => {
+  // Fetch initial services from the API
   const {
     services: initialServices,
     error,
@@ -29,6 +40,7 @@ const ServiceTree: React.FC = () => {
   } = useServices();
 
   /* --------------------------STATE VARIABLES-------------------------- */
+  // Local state to manage services, modifications, deletions, expansions, etc.
   const [allServicesState, setAllServicesState] = useState<Service[]>([]);
   const [modifiedServices, setModifiedServices] = useState<Set<string>>(
     new Set()
@@ -39,18 +51,44 @@ const ServiceTree: React.FC = () => {
   const [expandedServices, setExpandedServices] = useState<Set<string>>(
     new Set()
   );
+  const [pendingAction, setPendingAction] = useState<{
+    type: "indent" | "outdent";
+    uuid: string;
+  } | null>(null);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const { createService } = useCreateService();
-  const { deleteService } = useDeleteService();
+  const hasInitializedExpandedServices = useRef(false);
 
+  // Refs for scrolling to the last actioned service
+  const lastActionServiceUuid = useRef<string | null>(null);
+  const serviceRefs = useRef<{
+    [key: string]: HTMLTableRowElement | null;
+  }>({});
+
+  // Load initial services into local state when component mounts or updates
   useEffect(() => {
     setAllServicesState([...initialServices]);
   }, [initialServices]);
 
-  const { updateServiceData } = useUpdateService();
+  // Initialize expanded services to expand all by default
+  useEffect(() => {
+    if (
+      !hasInitializedExpandedServices.current &&
+      allServicesState.length > 0
+    ) {
+      setExpandedServices(
+        new Set(allServicesState.map((service) => service.uuid))
+      );
+      hasInitializedExpandedServices.current = true;
+    }
+  }, [allServicesState]);
 
+  const { updateServiceData } = useUpdateService();
+  const { createService } = useCreateService();
+  const { deleteService } = useDeleteService();
+
+  // Toggle expansion of a service
   const handleToggle = useCallback((uuid: string) => {
     setExpandedServices((prev) => {
       const newExpanded = new Set(prev);
@@ -64,6 +102,7 @@ const ServiceTree: React.FC = () => {
   }, []);
 
   /* --------------------------HANDLE SAVE-------------------------- */
+  // Save changes to the server
   const handleSave = useCallback(async () => {
     setIsSaving(true);
     try {
@@ -76,13 +115,13 @@ const ServiceTree: React.FC = () => {
 
       // Update modified services
       if (servicesToUpdate.length > 0) {
-        await updateServiceData(servicesToUpdate);
+        await updateServiceData(servicesToUpdate); // API call to update multiple services
       }
 
       // Create new services
       for (const service of allServicesState) {
         if (!service.uuid) {
-          await createService(service);
+          await createService(service); // API call to create
         }
       }
 
@@ -92,8 +131,8 @@ const ServiceTree: React.FC = () => {
       }
 
       setIsSaving(false);
-      refetch();
-      setModifiedServices(new Set());
+      refetch(); // Reload data from the server to reflect changes
+      setModifiedServices(new Set()); // Clear modified services after saving
     } catch (error) {
       console.error("Error saving services:", error);
       setIsSaving(false);
@@ -109,6 +148,7 @@ const ServiceTree: React.FC = () => {
   ]);
 
   /* --------------------------HANDLE TOGGLE EXPAND/COLLAPSE-------------------------- */
+  // Toggle expansion or collapse of all services
   const handleToggleExpandCollapse = useCallback(() => {
     if (expandedServices.size === allServicesState.length) {
       setExpandedServices(new Set()); // Collapse all
@@ -131,11 +171,13 @@ const ServiceTree: React.FC = () => {
   }, []);
 
   /* --------------------------HANDLE CREATE SERVICE-------------------------- */
+  // Add a new service to the state
   const handleCreateService = useCallback((newService: Service) => {
     setAllServicesState((prevServices) => [...prevServices, newService]);
   }, []);
 
   /* --------------------------HANDLE DELETE SERVICE-------------------------- */
+  // Delete a service from the state
   const handleDeleteService = useCallback((uuid: string) => {
     setAllServicesState((prevServices) =>
       prevServices.filter((service) => service.uuid !== uuid)
@@ -143,112 +185,177 @@ const ServiceTree: React.FC = () => {
     setDeletedServices((prevDeleted) => new Set(prevDeleted).add(uuid)); // Track deleted services
   }, []);
 
-  /* --------------------------HANDLE INDENT-------------------------- */
-  const handleIndentService = useCallback(
+  /* --------------------------PERFORM INDENT SERVICE-------------------------- */
+  // Indent a service (move it to a lower level)
+  const performIndentService = useCallback(
     (uuid: string) => {
       setAllServicesState((prevServices) => {
-        const index = prevServices.findIndex(
+        const serviceToIndent = prevServices.find(
           (service) => service.uuid === uuid
         );
-        if (index === -1) return prevServices;
+        if (!serviceToIndent) return prevServices;
 
-        const serviceToIndent = prevServices[index];
+        const { updatedServices, affectedServices } = indentService(
+          prevServices,
+          serviceToIndent
+        );
 
-        const newServices = [...prevServices];
-
-        if (serviceToIndent.level === "upper") {
-          for (let i = index - 1; i >= 0; i--) {
-            const potentialParent = newServices[i];
-            if (potentialParent.level === "upper") {
-              serviceToIndent.level = "middle";
-              serviceToIndent.upper_service_id = potentialParent.uuid;
-              serviceToIndent.middle_service_id = null;
-              break;
-            }
-          }
-        } else if (serviceToIndent.level === "middle") {
-          // Indent to lower
-          // Find previous service at the same or higher level
-          for (let i = index - 1; i >= 0; i--) {
-            const potentialParent = newServices[i];
-            if (potentialParent.level === "middle") {
-              serviceToIndent.level = "lower";
-              serviceToIndent.middle_service_id = potentialParent.uuid;
-              break;
-            }
-          }
-        }
+        const updatedServiceIds = affectedServices.map((s) => s.uuid);
 
         setModifiedServices((prevModified) => {
           const updatedModified = new Set(prevModified);
-          updatedModified.add(serviceToIndent.uuid);
+          updatedServiceIds.forEach((id) => updatedModified.add(id));
           return updatedModified;
         });
 
-        return newServices;
+        // Update expandedServices after indent
+        const newExpandedServices = updateExpandedServicesAfterIndentOutdent(
+          expandedServices,
+          affectedServices,
+          "indent"
+        );
+        setExpandedServices(newExpandedServices);
+
+        // Set the last action service UUID for scrolling
+        lastActionServiceUuid.current = uuid;
+
+        return updatedServices;
       });
     },
-    [setAllServicesState, setModifiedServices]
+    [setAllServicesState, setModifiedServices, expandedServices]
+  );
+
+  /* --------------------------PERFORM OUTDENT SERVICE-------------------------- */
+  // Outdent a service (move it to a higher level)
+  const performOutdentService = useCallback(
+    (uuid: string) => {
+      setAllServicesState((prevServices) => {
+        const serviceToOutdent = prevServices.find(
+          (service) => service.uuid === uuid
+        );
+        if (!serviceToOutdent) return prevServices;
+
+        const { updatedServices, affectedServices } = outdentService(
+          prevServices,
+          serviceToOutdent
+        );
+
+        const updatedServiceIds = affectedServices.map((s) => s.uuid);
+
+        setModifiedServices((prevModified) => {
+          const updatedModified = new Set(prevModified);
+          updatedServiceIds.forEach((id) => updatedModified.add(id));
+          return updatedModified;
+        });
+
+        // Update expandedServices after outdent
+        const newExpandedServices = updateExpandedServicesAfterIndentOutdent(
+          expandedServices,
+          affectedServices,
+          "outdent"
+        );
+        setExpandedServices(newExpandedServices);
+
+        // Set the last action service UUID for scrolling
+        lastActionServiceUuid.current = uuid;
+
+        return updatedServices;
+      });
+    },
+    [setAllServicesState, setModifiedServices, expandedServices]
+  );
+
+  /* --------------------------HANDLE INDENT-------------------------- */
+  // Handle indent action
+  const handleIndentService = useCallback(
+    (uuid: string) => {
+      const serviceIndex = allServicesState.findIndex(
+        (service) => service.uuid === uuid
+      );
+      if (serviceIndex === -1) return;
+
+      const serviceToIndent = allServicesState[serviceIndex];
+
+      if (
+        !expandedServices.has(serviceToIndent.uuid) &&
+        serviceHasChildren(serviceToIndent, allServicesState)
+      ) {
+        // Expand the service and set pending indent
+        setExpandedServices((prevExpanded) => {
+          const newExpanded = new Set(prevExpanded);
+          newExpanded.add(serviceToIndent.uuid);
+          return newExpanded;
+        });
+        setPendingAction({ type: "indent", uuid });
+      } else {
+        // Proceed to indent immediately
+        performIndentService(uuid);
+      }
+    },
+    [allServicesState, expandedServices, performIndentService]
   );
 
   /* --------------------------HANDLE OUTDENT-------------------------- */
+  // Handle outdent action
   const handleOutdentService = useCallback(
     (uuid: string) => {
-      setAllServicesState((prevServices) => {
-        const index = prevServices.findIndex(
-          (service) => service.uuid === uuid
-        );
-        if (index === -1) return prevServices;
+      const serviceIndex = allServicesState.findIndex(
+        (service) => service.uuid === uuid
+      );
+      if (serviceIndex === -1) return;
 
-        const newServices = [...prevServices];
+      const serviceToOutdent = allServicesState[serviceIndex];
 
-        const serviceToOutdent = newServices[index];
-
-        // Function to recursively adjust levels and parent IDs
-        const adjustLevelsOnOutdent = (
-          service: Service,
-          parentService: Service | null
-        ) => {
-          if (service.level === "middle") {
-            service.level = "upper";
-            service.upper_service_id = null;
-            service.middle_service_id = null;
-          } else if (service.level === "lower") {
-            service.level = "middle";
-            service.middle_service_id = null;
-            service.upper_service_id = parentService
-              ? parentService.uuid
-              : null;
-          }
-
-          const children = newServices.filter(
-            (s) =>
-              (s.level === "lower" && s.middle_service_id === service.uuid) ||
-              (s.level === "middle" && s.upper_service_id === service.uuid)
-          );
-
-          children.forEach((child) => {
-            adjustLevelsOnOutdent(child, service);
-          });
-        };
-
-        adjustLevelsOnOutdent(serviceToOutdent, null);
-
-        setModifiedServices((prevModified) => {
-          const updatedModified = new Set(prevModified);
-          updatedModified.add(serviceToOutdent.uuid);
-          return updatedModified;
+      if (
+        !expandedServices.has(serviceToOutdent.uuid) &&
+        serviceHasChildren(serviceToOutdent, allServicesState)
+      ) {
+        // Expand the service and set pending outdent
+        setExpandedServices((prevExpanded) => {
+          const newExpanded = new Set(prevExpanded);
+          newExpanded.add(serviceToOutdent.uuid);
+          return newExpanded;
         });
-
-        return newServices;
-      });
+        setPendingAction({ type: "outdent", uuid });
+      } else {
+        // Proceed to outdent immediately
+        performOutdentService(uuid);
+      }
     },
-    [setAllServicesState, setModifiedServices]
+    [allServicesState, expandedServices, performOutdentService]
   );
 
+  /* --------------------------USE EFFECT FOR PENDING ACTION-------------------------- */
+  // Perform pending indent or outdent action after expansion
+  useEffect(() => {
+    if (pendingAction) {
+      const { type, uuid } = pendingAction;
+      const isExpanded = expandedServices.has(uuid);
+      if (isExpanded) {
+        if (type === "indent") {
+          performIndentService(uuid);
+        } else if (type === "outdent") {
+          performOutdentService(uuid);
+        }
+        setPendingAction(null);
+      }
+    }
+  }, [
+    pendingAction,
+    expandedServices,
+    performIndentService,
+    performOutdentService,
+  ]);
+
   /* --------------------------GET VISIBLE SERVICES-------------------------- */
+  // Get the list of services that should be visible based on expansion state
   const getVisibleServices = useCallback(() => {
-    const visibleServices = [];
+    const visibleServices: Array<{
+      service: Service;
+      hasChildren: boolean;
+      canIndent: boolean;
+      canOutdent: boolean;
+    }> = [];
     const parentExpanded = new Map<string, boolean>();
 
     for (let i = 0; i < allServicesState.length; i++) {
@@ -266,7 +373,19 @@ const ServiceTree: React.FC = () => {
       }
 
       if (isVisible) {
-        visibleServices.push(service);
+        // Determine if the service has children
+        const hasChildren = serviceHasChildren(service, allServicesState);
+
+        // Determine if the service can be indented or outdented
+        const canIndentState = canIndent(service, allServicesState);
+        const canOutdentState = canOutdent(service);
+
+        visibleServices.push({
+          service,
+          hasChildren,
+          canIndent: canIndentState,
+          canOutdent: canOutdentState,
+        });
         parentExpanded.set(service.uuid, true);
       } else {
         parentExpanded.set(service.uuid, false);
@@ -275,6 +394,17 @@ const ServiceTree: React.FC = () => {
 
     return visibleServices;
   }, [allServicesState, expandedServices]);
+
+  // Scroll to the last indented/outdented service
+  useEffect(() => {
+    if (lastActionServiceUuid.current) {
+      const element = serviceRefs.current[lastActionServiceUuid.current];
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      lastActionServiceUuid.current = null;
+    }
+  });
 
   /* -------------------------------------------------------------------------- */
   /* --------------------------------JSX MARKUP-------------------------------- */
@@ -312,18 +442,28 @@ const ServiceTree: React.FC = () => {
           </Thead>
           <Tbody>
             {/* Render only visible services */}
-            {visibleServices.map((service) => (
-              <ServiceTreeRow
-                key={service.uuid}
-                service={service}
-                isExpanded={expandedServices.has(service.uuid)}
-                onToggle={() => handleToggle(service.uuid)}
-                allServices={allServicesState}
-                onDelete={handleDeleteService}
-                onIndent={() => handleIndentService(service.uuid)}
-                onOutdent={() => handleOutdentService(service.uuid)}
-              />
-            ))}
+            {visibleServices.map(
+              ({
+                service,
+                hasChildren,
+                canIndent: canIndentState,
+                canOutdent: canOutdentState,
+              }) => (
+                <ServiceTreeRow
+                  key={service.uuid}
+                  service={service}
+                  hasChildren={hasChildren}
+                  isExpanded={expandedServices.has(service.uuid)}
+                  onToggle={() => handleToggle(service.uuid)}
+                  onDelete={handleDeleteService}
+                  onIndent={() => handleIndentService(service.uuid)}
+                  onOutdent={() => handleOutdentService(service.uuid)}
+                  canIndent={canIndentState}
+                  canOutdent={canOutdentState}
+                  ref={(el) => (serviceRefs.current[service.uuid] = el)}
+                />
+              )
+            )}
           </Tbody>
         </Table>
       ) : (
