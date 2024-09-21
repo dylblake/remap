@@ -1,5 +1,5 @@
-// GloDex/client/src/utils/serviceTreeUtils.ts
 import { Service } from "../types/Service";
+import { findNextService, findNextServiceGroup } from "./serviceGeneralUtils";
 
 /*-----------------------------------CAN INDENT-----------------------------------*/
 export const canIndent = (
@@ -52,15 +52,28 @@ export const indentService = (
   let affectedServices: Service[] = [];
   let updatedServices = [...services];
 
+  const serviceToIndentOrder = serviceToIndent.order;
+
   // ----- UPPER -> MIDDLE INDENT
   if (serviceToIndent.level === "upper") {
+    // Find the preceding upper service using findNextService
+    const precedingUpperService = findNextService(
+      services,
+      serviceToIndentOrder,
+      "up",
+      "upper"
+    );
+
+    // Update the service being indented
     updatedServices = updatedServices.map((service) => {
       if (service.uuid === serviceToIndent.uuid) {
-        //Update service new middle level
         const updatedService = {
           ...service,
           level: "middle" as const,
           middle_service_id: null,
+          upper_service_id: precedingUpperService
+            ? precedingUpperService.uuid
+            : null,
         };
         affectedServices.push(updatedService); // Tracks modified services
         return updatedService;
@@ -68,55 +81,66 @@ export const indentService = (
       return service;
     });
 
-    const serviceToIndentOrder = serviceToIndent.order;
-
-    // Find the preceding upper service in service order
-    const precedingUpper = services.find(
-      (s) => s.level === "upper" && s.order < serviceToIndentOrder
-    );
-    //If preceding upper exists, update all affected services' upper_service_id to preceding upper uuid
-    if (precedingUpper) {
+    // If preceding upper exists, update all services that had the indented service as their upper_service_id
+    if (precedingUpperService) {
       updatedServices = updatedServices.map((service) => {
         if (service.upper_service_id === serviceToIndent.uuid) {
           const updatedService = {
             ...service,
-            upper_service_id: precedingUpper.uuid,
+            upper_service_id: precedingUpperService.uuid, // Update with found upper service UUID
           };
-          affectedServices.push(updatedService); //Tracks modified services
+          affectedServices.push(updatedService); // Track modified services
           return updatedService;
         }
         return service;
       });
     }
 
-    // Find proceeding lower services and update their middle_service_id with the indented service's uuid
-    updatedServices = updatedServices.map((service) => {
-      if (service.order > serviceToIndentOrder && service.level === "lower") {
-        const updatedService = {
-          ...service,
-          middle_service_id: serviceToIndent.uuid,
-        };
-        affectedServices.push(updatedService); // Tracks modified services
-        return updatedService;
-      }
-      return service;
-    });
+    // Find the next group of lower services using findNextServiceGroup
+    const lowerServicesGroup = findNextServiceGroup(
+      services,
+      serviceToIndentOrder,
+      "down",
+      "lower"
+    );
+
+    // Update the middle_service_id of the lower services to the indented service's UUID
+    if (lowerServicesGroup.length > 0) {
+      updatedServices = updatedServices.map((service) => {
+        if (
+          lowerServicesGroup.some(
+            (lowerService) => lowerService.uuid === service.uuid
+          )
+        ) {
+          const updatedService = {
+            ...service,
+            middle_service_id: serviceToIndent.uuid,
+          };
+          affectedServices.push(updatedService); // Track modified services
+          return updatedService;
+        }
+        return service;
+      });
+    }
   }
 
   // ----- MIDDLE -> LOWER INDENT
   if (serviceToIndent.level === "middle") {
-    //Find preceding middle service in service order
-    const precedingMiddle = services.find(
-      (s) => s.level === "middle" && s.order < serviceToIndent.order
+    // Find the preceding middle service using findNextService
+    const precedingMiddleService = findNextService(
+      services,
+      serviceToIndentOrder,
+      "up",
+      "middle"
     );
 
-    if (precedingMiddle) {
-      //If preceding middle exists,
+    if (precedingMiddleService) {
+      // Update services that had the indented service as their middle_service_id
       updatedServices = updatedServices.map((service) => {
         if (service.middle_service_id === serviceToIndent.uuid) {
           const updatedService = {
             ...service,
-            middle_service_id: precedingMiddle.uuid,
+            middle_service_id: precedingMiddleService.uuid,
           };
           affectedServices.push(updatedService); // Tracks modified services
           return updatedService;
@@ -124,13 +148,22 @@ export const indentService = (
         return service;
       });
 
-      // Update service to new lower level
+      // Update the service being indented
       updatedServices = updatedServices.map((service) => {
         if (service.uuid === serviceToIndent.uuid) {
+          const precedingUpperService = findNextService(
+            services,
+            service.order,
+            "up",
+            "upper"
+          );
           const updatedService = {
             ...service,
             level: "lower" as const,
-            middle_service_id: precedingMiddle.uuid,
+            middle_service_id: precedingMiddleService.uuid,
+            upper_service_id: precedingUpperService
+              ? precedingUpperService.uuid
+              : null,
           };
           affectedServices.push(updatedService); // Track modified service
           return updatedService;
@@ -152,15 +185,26 @@ export const outdentService = (
   let affectedServices: Service[] = [];
   let updatedServices = [...services];
 
+  const serviceToOutdentOrder = serviceToOutdent.order;
+
   // ----- LOWER -> MIDDLE OUTDENT
   if (serviceToOutdent.level === "lower") {
-    // Change the level of the service to middle and null middle_service_id
+    // Update the service being outdented
     updatedServices = updatedServices.map((service) => {
       if (service.uuid === serviceToOutdent.uuid) {
+        const findPrecedingUpperService = findNextService(
+          services,
+          serviceToOutdentOrder,
+          "up",
+          "upper"
+        );
         const updatedService = {
           ...service,
           level: "middle" as const,
           middle_service_id: null,
+          upper_service_id: findPrecedingUpperService
+            ? findPrecedingUpperService.uuid
+            : null,
         };
         affectedServices.push(updatedService); // Tracks modified service
         return updatedService;
@@ -168,32 +212,44 @@ export const outdentService = (
       return service;
     });
 
-    const serviceToOutdentOrder = serviceToOutdent.order;
+    // Find the group of lower services following the outdented service
+    const lowerServicesGroup = findNextServiceGroup(
+      services,
+      serviceToOutdentOrder,
+      "down",
+      "lower"
+    );
 
-    // Find lower services that follow and update their middle_service_id
-    updatedServices = updatedServices.map((service) => {
-      if (service.order > serviceToOutdentOrder && service.level === "lower") {
-        const updatedService = {
-          ...service,
-          middle_service_id: serviceToOutdent.uuid,
-        };
-        affectedServices.push(updatedService); // Tracks modified services
-        return updatedService;
-      }
-      return service;
-    });
+    // Update their middle_service_id to the outdented service's UUID
+    if (lowerServicesGroup.length > 0) {
+      updatedServices = updatedServices.map((service) => {
+        if (
+          lowerServicesGroup.some(
+            (lowerService) => lowerService.uuid === service.uuid
+          )
+        ) {
+          const updatedService = {
+            ...service,
+            middle_service_id: serviceToOutdent.uuid,
+          };
+          affectedServices.push(updatedService); // Track modified services
+          return updatedService;
+        }
+        return service;
+      });
+    }
   }
 
   // ----- MIDDLE -> UPPER OUTDENT
   if (serviceToOutdent.level === "middle") {
-    // Update the middle service to become upper level
+    // Update the service being outdented
     updatedServices = updatedServices.map((service) => {
       if (service.uuid === serviceToOutdent.uuid) {
         const updatedService = {
           ...service,
           level: "upper" as const,
-          upper_service_id: null, // Clear upper_service_id
-          middle_service_id: null, // Clear middle_service_id
+          upper_service_id: null,
+          middle_service_id: null,
         };
         affectedServices.push(updatedService); // Track modified service
         return updatedService;
@@ -201,35 +257,36 @@ export const outdentService = (
       return service;
     });
 
-    // Only affect the immediate lower services of the outdented middle service
-    for (
-      let i = services.indexOf(serviceToOutdent) + 1;
-      i < services.length;
-      i++
-    ) {
-      const currentService = services[i];
+    // Find the group of lower services immediately following the outdented middle service
+    const lowerServicesGroup = findNextServiceGroup(
+      services,
+      serviceToOutdentOrder,
+      "down",
+      "lower"
+    );
 
-      // Stop if we encounter the next middle or upper service
-      if (
-        currentService.level === "middle" ||
-        currentService.level === "upper"
-      ) {
-        break;
-      }
-
-      // If it's a lower service, move it to middle level under the outdented service
-      if (currentService.level === "lower") {
-        const updatedService = {
-          ...currentService,
-          level: "middle" as const, // Promote to middle
-          middle_service_id: null, // Clear middle_service_id
-          upper_service_id: serviceToOutdent.uuid, // Set new upper_service_id
-        };
-        affectedServices.push(updatedService); // Track modified service
-        updatedServices[i] = updatedService; // Update the service in the list
-      }
+    // Update these lower services to become middle level under the outdented service
+    if (lowerServicesGroup.length > 0) {
+      updatedServices = updatedServices.map((service) => {
+        if (
+          lowerServicesGroup.some(
+            (lowerService) => lowerService.uuid === service.uuid
+          )
+        ) {
+          const updatedService = {
+            ...service,
+            level: "middle" as const, // Promote to middle
+            middle_service_id: null,
+            upper_service_id: serviceToOutdent.uuid,
+          };
+          affectedServices.push(updatedService); // Track modified service
+          return updatedService;
+        }
+        return service;
+      });
     }
   }
+
   // Return the updated services and affected services
   return { updatedServices, affectedServices };
 };
