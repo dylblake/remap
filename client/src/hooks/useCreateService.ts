@@ -14,21 +14,28 @@ const useCreateService = (): CreateServiceResponse => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const createService = async (serviceData: Omit<Service, 'uuid'>) => {
+  const createService = (serviceData: Omit<Service, 'uuid'>): Promise<void> => {
     setIsLoading(true);
     setError(null);
 
-    try {
-      const response = await axiosInstance.post<Service>("/services", serviceData);
-      setService(response.data);
-      setError(null);
-    } catch (err) {
-      console.error('Error creating service:', err);
-      setService(null);
-      setError("There was an error creating the service. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    return new Promise((resolve, reject) => {
+      axiosInstance
+        .post<Service>("/services", serviceData)
+        .then((response) => {
+          setService(response.data);
+          setError(null);
+          resolve();
+        })
+        .catch((err) => {
+          console.error('Error creating service:', err);
+          setService(null);
+          setError("There was an error creating the service. Please try again.");
+          reject(err);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    });
   };
 
   return {

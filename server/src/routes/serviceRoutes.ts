@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getServices, createService, getServiceById, updateService, deleteService, updateServiceOrder } from '../controllers/serviceController';
+import { getServices, createService, getServiceById, updateService, deleteService, updateServiceOrder, updateBatchServices } from '../controllers/serviceController';
 
 const serviceRoutes = Router();
 
@@ -12,6 +12,9 @@ serviceRoutes.get('/', getServices);
 // Route to update the order of services
 serviceRoutes.put('/order', updateServiceOrder);
 
+// Route to update a batch of services
+serviceRoutes.put('/batch', updateBatchServices);
+
 // Route to get a single service by UUID
 serviceRoutes.get('/:id', getServiceById);
 
@@ -20,5 +23,6 @@ serviceRoutes.put('/:id', updateService);
 
 // Route to delete a service by UUID
 serviceRoutes.delete('/:id', deleteService);
+
 
 export default serviceRoutes;

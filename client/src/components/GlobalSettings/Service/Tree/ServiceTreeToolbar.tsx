@@ -1,5 +1,11 @@
 import React, { useCallback } from "react";
-import { Button, Flex, IconButton, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  Flex,
+  IconButton,
+  useToast,
+  useColorMode,
+} from "@chakra-ui/react";
 import ServiceFormPopover from "../ServiceFormPopover";
 import { FaRedo, FaSave, FaUndo } from "react-icons/fa";
 import { Service } from "../../../../types/Service";
@@ -28,7 +34,7 @@ const ServiceTreeToolbar: React.FC<ServiceTreeToolbarProps> = ({
   onServiceCreated,
 }) => {
   const toast = useToast();
-
+  const { colorMode } = useColorMode();
   const handleSave = useCallback(() => {
     onSave();
     toast({
@@ -40,19 +46,36 @@ const ServiceTreeToolbar: React.FC<ServiceTreeToolbarProps> = ({
     });
   }, [onSave, toast]);
 
+  //configure
+  const toolbarBg = colorMode === "dark" ? "gray.700" : "gray.50";
+  const borderColor = colorMode === "dark" ? "gray.600" : "gray.1000";
+  const borderWidth = colorMode === "dark" ? "1px" : "3px";
+
   return (
-    <Flex justify="space-between" mb={4} align="center">
+    <Flex
+      justify="space-between"
+      mb={4}
+      align="center"
+      // Make the toolbar sticky
+      position="sticky"
+      top={0} // Sticks to the top of the scrollable container
+      zIndex={10} // Ensures it stays on top of the table
+      bg={toolbarBg} // Background color to avoid overlapping content
+      borderRadius="md"
+      borderColor={borderColor}
+      borderWidth={borderWidth}
+      p={2} // Optional padding to separate from the content
+    >
       <Flex gap={2} align="center">
         <Button
           variant="outline"
-          colorScheme="gray"
-          onClick={onToggleExpandCollapse} // This button toggles expand/collapse
+          colorScheme="teal"
+          onClick={onToggleExpandCollapse}
           size="sm"
         >
           {isAllExpanded ? "Collapse All" : "Expand All"}
         </Button>
-        <ServiceFormPopover onServiceCreated={onServiceCreated} />{" "}
-        {/* Pass the prop */}
+        <ServiceFormPopover onServiceCreated={onServiceCreated} />
       </Flex>
       <Flex gap={0} align="center">
         <IconButton

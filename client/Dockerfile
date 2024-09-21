@@ -1,5 +1,9 @@
 FROM node:lts-alpine
-WORKDIR /opt/app
+
+# Add compatibility for native dependencies
+RUN apk add --no-cache libc6-compat
+
+WORKDIR /usr/src/app
 
 # Copy package.json and yarn.lock
 COPY package.json yarn.lock ./

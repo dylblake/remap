@@ -8,26 +8,35 @@ export const useServices = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefetching, setIsRefetching] = useState(false);
 
-  const fetchServicesData = useCallback(async () => {
+  const fetchServicesData = useCallback(() => {
     setIsLoading(true);
     setIsRefetching(false);
-    try {
-      const data = await fetchServices();
-      setServices(data);
-    } catch (error) {
-      setError('Failed to fetch services');
-    } finally {
-      setIsLoading(false);
-    }
+    
+    fetchServices()
+      .then((data) => {
+        setServices(data);
+      })
+      .catch(() => {
+        setError('Failed to fetch services');
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   }, []);
 
-  const refetch = async () => {
+  const refetch = () => {
     setIsRefetching(true);
-    try {
-      await fetchServicesData();
-    } finally {
-      setIsRefetching(false);
-    }
+    
+    fetchServices()
+      .then((data) => {
+        setServices(data);
+      })
+      .catch(() => {
+        setError('Failed to refetch services');
+      })
+      .finally(() => {
+        setIsRefetching(false);
+      });
   };
 
   useEffect(() => {

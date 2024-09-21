@@ -70,7 +70,7 @@ const NavBar: React.FC = () => {
 
         <IconButton
           aria-label="Toggle dark mode"
-          icon={colorMode === "dark" ? <MoonIcon /> : <SunIcon />}
+          icon={colorMode === "dark" ? <SunIcon /> : <MoonIcon />}
           onClick={toggleColorMode}
           variant="ghost"
           _hover={{ bg: "green.500" }}

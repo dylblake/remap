@@ -43,7 +43,7 @@ const ServiceFormPopover: React.FC<ServiceFormPopoverProps> = ({
     const newService = {
       uuid: Date.now().toString(), // Generate a temporary UUID
       name,
-      order: 1,
+      order: 0,
       type: "upper",
     };
 
