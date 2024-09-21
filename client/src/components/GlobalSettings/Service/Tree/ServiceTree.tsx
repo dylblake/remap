@@ -1,3 +1,5 @@
+// ServiceTree.tsx
+
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Table,
@@ -212,7 +214,8 @@ const ServiceTree: React.FC = () => {
         const newExpandedServices = updateExpandedServicesAfterIndentOutdent(
           expandedServices,
           affectedServices,
-          "indent"
+          "indent",
+          updatedServices // Pass allServicesState
         );
         setExpandedServices(newExpandedServices);
 
@@ -252,7 +255,8 @@ const ServiceTree: React.FC = () => {
         const newExpandedServices = updateExpandedServicesAfterIndentOutdent(
           expandedServices,
           affectedServices,
-          "outdent"
+          "outdent",
+          updatedServices // Pass allServicesState
         );
         setExpandedServices(newExpandedServices);
 
@@ -356,7 +360,7 @@ const ServiceTree: React.FC = () => {
       canIndent: boolean;
       canOutdent: boolean;
     }> = [];
-    const parentExpanded = new Map<string, boolean>();
+    const parentVisibilityMap = new Map<string, boolean>();
 
     for (let i = 0; i < allServicesState.length; i++) {
       const service = allServicesState[i];
@@ -364,11 +368,11 @@ const ServiceTree: React.FC = () => {
       let isVisible = true;
       if (service.level === "middle" && service.upper_service_id) {
         isVisible =
-          parentExpanded.get(service.upper_service_id) !== false &&
+          parentVisibilityMap.get(service.upper_service_id) !== false &&
           expandedServices.has(service.upper_service_id);
       } else if (service.level === "lower" && service.middle_service_id) {
         isVisible =
-          parentExpanded.get(service.middle_service_id) !== false &&
+          parentVisibilityMap.get(service.middle_service_id) !== false &&
           expandedServices.has(service.middle_service_id);
       }
 
@@ -386,9 +390,9 @@ const ServiceTree: React.FC = () => {
           canIndent: canIndentState,
           canOutdent: canOutdentState,
         });
-        parentExpanded.set(service.uuid, true);
+        parentVisibilityMap.set(service.uuid, true);
       } else {
-        parentExpanded.set(service.uuid, false);
+        parentVisibilityMap.set(service.uuid, false);
       }
     }
 

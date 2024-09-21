@@ -4,7 +4,7 @@ export const serviceHasChildren = (
   service: Service,
   allServices: Service[]
 ): boolean => {
-  return allServices.some(
+  const hasChildren = allServices.some(
     (s) =>
       (service.level === "upper" &&
         s.level === "middle" &&
@@ -13,12 +13,17 @@ export const serviceHasChildren = (
         s.level === "lower" &&
         s.middle_service_id === service.uuid)
   );
+  console.log(
+    `Service ${service.uuid} (${service.name}) hasChildren: ${hasChildren}`
+  );
+  return hasChildren;
 };
 
 export const updateExpandedServicesAfterIndentOutdent = (
   expandedServices: Set<string>,
   affectedServices: Service[],
-  actionType: "indent" | "outdent"
+  actionType: "indent" | "outdent",
+  allServices: Service[] // Add this parameter
 ): Set<string> => {
   const newExpandedServices = new Set(expandedServices);
 
@@ -32,7 +37,8 @@ export const updateExpandedServicesAfterIndentOutdent = (
       }
     } else if (actionType === "outdent") {
       // If a service was outdented, ensure it is expanded if it has children
-      if (serviceHasChildren(service, affectedServices)) {
+      if (serviceHasChildren(service, allServices)) {
+        // Use allServices instead of affectedServices
         newExpandedServices.add(service.uuid);
       }
       // Also expand the service above it

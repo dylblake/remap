@@ -116,6 +116,7 @@ export const indentService = (
 };
 
 /*-----------------------------------OUTDENT SERVICE-----------------------------------*/
+/*-----------------------------------OUTDENT SERVICE-----------------------------------*/
 export const outdentService = (
   services: Service[],
   serviceToOutdent: Service
@@ -140,13 +141,18 @@ export const outdentService = (
       return service;
     });
 
-    // Update any lower-level children to point to the outdented service
+    // Update any immediate siblings to now become children of the outdented service
     updatedServices = updatedServices.map((service) => {
-      if (service.middle_service_id === serviceToOutdent.uuid) {
+      // Find siblings that should now be children of the outdented service
+      if (
+        service.upper_service_id === serviceToOutdent.upper_service_id &&
+        service.middle_service_id === serviceToOutdent.middle_service_id &&
+        service.order > serviceToOutdent.order &&
+        service.level === "lower"
+      ) {
         const updatedService = {
           ...service,
-          upper_service_id: serviceToOutdent.upper_service_id,
-          middle_service_id: serviceToOutdent.uuid,
+          middle_service_id: serviceToOutdent.uuid, // Now becomes a child of the outdented service
         };
         affectedServices.push(updatedService);
         return updatedService;
