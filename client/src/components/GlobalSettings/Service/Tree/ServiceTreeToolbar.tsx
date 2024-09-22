@@ -1,3 +1,5 @@
+// /Users/dylanevans/GloDex/client/src/components/GlobalSettings/Service/ServiceTreeToolbar.tsx
+
 import React, { useCallback } from "react";
 import {
   Button,
@@ -19,7 +21,7 @@ interface ServiceTreeToolbarProps {
   canUndo: boolean;
   canRedo: boolean;
   isSaving: boolean;
-  onServiceCreated: (newService: Service) => void; // Add this line
+  onServiceCreated: (newService: Service) => void;
 }
 
 const ServiceTreeToolbar: React.FC<ServiceTreeToolbarProps> = ({
@@ -35,6 +37,7 @@ const ServiceTreeToolbar: React.FC<ServiceTreeToolbarProps> = ({
 }) => {
   const toast = useToast();
   const { colorMode } = useColorMode();
+
   const handleSave = useCallback(() => {
     onSave();
     toast({
@@ -46,7 +49,7 @@ const ServiceTreeToolbar: React.FC<ServiceTreeToolbarProps> = ({
     });
   }, [onSave, toast]);
 
-  //configure
+  // Configure styles based on color mode
   const toolbarBg = colorMode === "dark" ? "gray.700" : "gray.50";
   const borderColor = colorMode === "dark" ? "gray.600" : "gray.1000";
   const borderWidth = colorMode === "dark" ? "1px" : "3px";
@@ -54,17 +57,12 @@ const ServiceTreeToolbar: React.FC<ServiceTreeToolbarProps> = ({
   return (
     <Flex
       justify="space-between"
-      mb={4}
       align="center"
-      // Make the toolbar sticky
-      position="sticky"
-      top={0} // Sticks to the top of the scrollable container
-      zIndex={10} // Ensures it stays on top of the table
-      bg={toolbarBg} // Background color to avoid overlapping content
-      borderRadius="md"
+      bg={toolbarBg}
       borderColor={borderColor}
       borderWidth={borderWidth}
-      p={2} // Optional padding to separate from the content
+      p={2}
+      height="50px"
     >
       <Flex gap={2} align="center">
         <Button
@@ -77,13 +75,13 @@ const ServiceTreeToolbar: React.FC<ServiceTreeToolbarProps> = ({
         </Button>
         <ServiceFormPopover onServiceCreated={onServiceCreated} />
       </Flex>
-      <Flex gap={0} align="center">
+      <Flex gap={1} align="center">
         <IconButton
           aria-label="Undo"
           icon={<FaUndo />}
           onClick={onUndo}
           variant="ghost"
-          size="lg"
+          size="sm"
           isDisabled={!canUndo}
           _hover={canUndo ? { color: "green.500" } : {}}
         />
@@ -92,16 +90,16 @@ const ServiceTreeToolbar: React.FC<ServiceTreeToolbarProps> = ({
           icon={<FaRedo />}
           onClick={onRedo}
           variant="ghost"
-          size="lg"
+          size="sm"
           isDisabled={!canRedo}
           _hover={canRedo ? { color: "green.500" } : {}}
         />
         <IconButton
-          aria-label="save"
+          aria-label="Save"
           onClick={handleSave}
           icon={<FaSave />}
           variant="ghost"
-          size="lg"
+          size="sm"
           isLoading={isSaving}
           _hover={{ color: "green.500" }}
         />
