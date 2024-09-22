@@ -1,60 +1,51 @@
-import React from "react";
-import {
-  Grid,
-  GridItem,
-  Box,
-  Heading,
-  Text,
-  VStack,
-  useBreakpointValue,
-} from "@chakra-ui/react";
-import NavBar from "../components/Main/NavBar";
+import React, { useMemo } from "react";
+import { Box, Grid, GridItem, useColorModeValue } from "@chakra-ui/react";
+import NavBar from "../components/Common/NavBar";
+import HeroSection from "../components/Home/HeroSection";
+import FeaturesSection from "../components/Home/FeaturesSection";
+import CTAFooter from "../components/Home/CTAFooter";
 
 const Home: React.FC = () => {
-  const isXsScreen = useBreakpointValue({ base: true, sm: false });
+  const templateAreas = useMemo(
+    () => ({
+      base: `"nav" "main"`,
+      md: `"nav nav" "main main"`,
+    }),
+    []
+  );
+
+  const templateColumns = useMemo(
+    () => ({
+      base: "1fr",
+      md: "1fr",
+    }),
+    []
+  );
+
+  // Define color variables based on color mode
+  const mainBg = useColorModeValue("gray.50", "gray.900"); // Page background
 
   return (
-    <Grid
-      templateAreas={{
-        base: `"nav" "main"`,
-        md: `"nav nav" "aside main"`,
-      }}
-      templateColumns={{
-        base: "1fr",
-        md: "300px 1fr",
-      }}
-    >
-      <GridItem area="nav">
-        <NavBar />
-      </GridItem>
-      <GridItem area="aside" display={{ base: "none", md: "block" }}>
-        <Box p={4}>
-          <Heading as="h2" size="md">
-            Aside Section
-          </Heading>
-          <Text>This is where AsideLinks will go.</Text>
-        </Box>
-      </GridItem>
-      <GridItem area="main">
-        <Box p={8} textAlign="center">
-          <VStack spacing={6}>
-            <Heading as="h1" size="2xl">
-              Welcome to GloDex
-            </Heading>
-            <Text fontSize="xl">
-              Your one-stop index of country feasibility and experience
-              information for travel logistics in clinical trials.
-            </Text>
-            {isXsScreen && (
-              <Text fontSize="md">
-                Viewing on a small screen? Check out the settings for more
-                options!
-              </Text>
-            )}
-          </VStack>
-        </Box>
-      </GridItem>
-    </Grid>
+    <Box bg={mainBg} minH="100vh">
+      <Grid
+        templateAreas={templateAreas}
+        templateColumns={templateColumns}
+        gap={4}
+        p={{ base: 2, md: 4 }}
+      >
+        {/* Nav Bar */}
+        <GridItem area="nav">
+          <NavBar />
+        </GridItem>
+
+        {/* Main Content */}
+        <GridItem area="main">
+          <HeroSection />
+          <FeaturesSection />
+          <CTAFooter />
+        </GridItem>
+      </Grid>
+    </Box>
   );
 };
 
