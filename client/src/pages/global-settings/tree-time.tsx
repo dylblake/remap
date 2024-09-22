@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Grid, GridItem, Heading, Text, VStack, Flex } from "@chakra-ui/react";
-import NavBar from "../../components/Main/NavBar";
-import AsideLinks from "./common/AsideLinks";
+import NavBar from "../../components/Common/NavBar";
+import AsideLinks from "../../components/GlobalSettings/Service/AsideLinks";
 
 const TreeTime: React.FC = () => {
   const templateAreas = useMemo(
