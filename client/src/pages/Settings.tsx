@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, GridItem, Box, Heading, Text, VStack } from "@chakra-ui/react";
-import NavBar from "../components/Main/NavBar";
+import NavBar from "../components/Common/NavBar";
 
 const Settings: React.FC = () => {
   return (

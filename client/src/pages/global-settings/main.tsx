@@ -1,12 +1,23 @@
+// Glodex/client/src/pages/GlobalSettings/Main.tsx
+
 import React, { useMemo } from "react";
-import { Grid, GridItem, Heading, Text, VStack, Flex } from "@chakra-ui/react";
-import NavBar from "../../components/Main/NavBar";
-import AsideLinks from "./common/AsideLinks";
+import {
+  Grid,
+  GridItem,
+  Heading,
+  Text,
+  VStack,
+  Box,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import NavBar from "../../components/Common/NavBar";
+import AsideLinks from "../../components/GlobalSettings/Service/AsideLinks";
+import AboveLinks from "../../components/GlobalSettings/Service/AboveLinks"; // Importing AboveLinks for small screens
 
 const Main: React.FC = () => {
   const templateAreas = useMemo(
     () => ({
-      base: `"nav" "main"`,
+      base: `"nav" "above" "main"`,
       md: `"nav nav" "aside main"`,
     }),
     []
@@ -15,41 +26,80 @@ const Main: React.FC = () => {
   const templateColumns = useMemo(
     () => ({
       base: "1fr",
-      md: "300px 1fr",
+      md: "250px 1fr", // Consistent width for AsideLinks
     }),
     []
   );
 
+  // Define color variables based on color mode
+  const mainBg = useColorModeValue("gray.50", "gray.900"); // Background for the main content
+  const sectionBg = useColorModeValue("white", "gray.700"); // Background for sections
+  const textColor = useColorModeValue("gray.800", "gray.100"); // Primary text color
+  const subTextColor = useColorModeValue("gray.600", "gray.300"); // Subheading text color
+  const boxShadow = useColorModeValue("md", "dark-lg"); // Box shadow for content containers
+  const borderRadius = "md"; // Consistent border radius
+
   return (
-    <Grid templateAreas={templateAreas} templateColumns={templateColumns}>
-      {/* Nav Bar */}
-      <GridItem area="nav">
-        <NavBar />
-      </GridItem>
-
-      {/* Side Panel */}
-      <GridItem
-        area="aside"
-        display={{ base: "none", md: "block" }}
-        position="relative"
+    <Box bg={mainBg} minH="100vh">
+      <Grid
+        templateAreas={templateAreas}
+        templateColumns={templateColumns}
+        gap={4}
+        p={{ base: 2, md: 4 }}
       >
-        <AsideLinks />
-      </GridItem>
+        {/* Nav Bar */}
+        <GridItem area="nav">
+          <NavBar />
+        </GridItem>
 
-      {/* Main */}
-      <GridItem area="main">
-        {/* Heading */}
-        <Flex direction="column" p={4} gap={6}>
-          <VStack spacing={3} mb={10}>
-            <Heading as="h1" size="xl" pt={5} pb={0}>
-              Global Services Settings
-            </Heading>
-            <Text size="s">Subheading text here</Text>
-          </VStack>
-          {/* Main Section */}
-        </Flex>
-      </GridItem>
-    </Grid>
+        {/* AboveLinks for Small Screens */}
+        <GridItem
+          area="above"
+          display={{ base: "block", md: "none" }} // Show only on small screens
+        >
+          <AboveLinks />
+        </GridItem>
+
+        {/* Side Panel */}
+        <GridItem
+          area="aside"
+          display={{ base: "none", md: "block" }} // Hide on small screens
+          position="relative"
+        >
+          <AsideLinks />
+        </GridItem>
+
+        {/* Main Content Area */}
+        <GridItem area="main">
+          {/* Container Box */}
+          <Box
+            bg={sectionBg}
+            borderRadius={borderRadius}
+            boxShadow={boxShadow}
+            p={{ base: 4, md: 6 }}
+          >
+            {/* Heading and Subheading */}
+            <VStack spacing={3} mb={10} align="start">
+              <Heading as="h1" size="xl" color={textColor}>
+                Global Services Settings
+              </Heading>
+              <Text fontSize="md" color={subTextColor}>
+                Manage and configure your global services here.
+              </Text>
+            </VStack>
+
+            {/* Placeholder for Main Content */}
+            <Box>
+              {/* Add your main content here */}
+              <Text fontSize="lg" color={textColor}>
+                Welcome to the Global Services Settings page. Here you can
+                manage and configure all your global services.
+              </Text>
+            </Box>
+          </Box>
+        </GridItem>
+      </Grid>
+    </Box>
   );
 };
 

@@ -1,4 +1,4 @@
-// ServiceTree.tsx
+// /Users/dylanevans/GloDex/client/src/components/GlobalSettings/Service/Tree/ServiceTree.tsx
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
@@ -12,6 +12,8 @@ import {
   Spinner,
   Alert,
   AlertIcon,
+  useColorModeValue,
+  Td,
 } from "@chakra-ui/react";
 import ServiceTreeRow from "./ServiceTreeRow";
 import ServiceTreeToolbar from "./ServiceTreeToolbar";
@@ -117,13 +119,13 @@ const ServiceTree: React.FC = () => {
 
       // Update modified services
       if (servicesToUpdate.length > 0) {
-        await updateServiceData(servicesToUpdate); // API call to update multiple services
+        await updateServiceData(servicesToUpdate);
       }
 
       // Create new services
       for (const service of allServicesState) {
         if (!service.uuid) {
-          await createService(service); // API call to create
+          await createService(service);
         }
       }
 
@@ -133,8 +135,8 @@ const ServiceTree: React.FC = () => {
       }
 
       setIsSaving(false);
-      refetch(); // Reload data from the server to reflect changes
-      setModifiedServices(new Set()); // Clear modified services after saving
+      refetch();
+      setModifiedServices(new Set());
     } catch (error) {
       console.error("Error saving services:", error);
       setIsSaving(false);
@@ -408,7 +410,7 @@ const ServiceTree: React.FC = () => {
       }
       lastActionServiceUuid.current = null;
     }
-  });
+  }, []);
 
   /* -------------------------------------------------------------------------- */
   /* --------------------------------JSX MARKUP-------------------------------- */
@@ -417,63 +419,163 @@ const ServiceTree: React.FC = () => {
   const visibleServices = getVisibleServices();
   const isAllExpanded = expandedServices.size === allServicesState.length;
 
+  // Color variables for theming
+  const tableBg = useColorModeValue("gray.50", "gray.900");
+  const headerBg = useColorModeValue("teal.600", "teal.800");
+  const noDataTextColor = useColorModeValue("gray.500", "white");
+  const hoverBg = useColorModeValue("gray.100", "gray.700");
+
   return (
-    <Box p={4}>
-      <ServiceTreeToolbar
-        isAllExpanded={isAllExpanded}
-        onToggleExpandCollapse={handleToggleExpandCollapse}
-        onSave={handleSave}
-        onUndo={handleUndo}
-        onRedo={handleRedo}
-        canUndo={canUndo}
-        canRedo={canRedo}
-        isSaving={isSaving}
-        onServiceCreated={handleCreateService} // Pass the callback
-      />
+    <Box
+      display="flex"
+      flexDirection="column"
+      width="100%" // Ensure full width
+      bg={tableBg}
+    >
+      {/* Toolbar */}
+      <Box
+        bg={useColorModeValue("white", "gray.800")}
+        position="sticky"
+        top="0"
+        zIndex={10} // Ensures it stays on top of the table
+      >
+        <ServiceTreeToolbar
+          isAllExpanded={isAllExpanded}
+          onToggleExpandCollapse={handleToggleExpandCollapse}
+          onSave={handleSave}
+          onUndo={handleUndo}
+          onRedo={handleRedo}
+          canUndo={canUndo}
+          canRedo={canRedo}
+          isSaving={isSaving}
+          onServiceCreated={handleCreateService}
+        />
+      </Box>
+
+      {/* Table */}
       {isLoading && !isRefetching ? (
-        <Spinner size="lg" />
+        <Box p={4} textAlign="center">
+          <Spinner size="md" />
+        </Box>
       ) : error ? (
-        <Alert status="error">
+        <Alert status="error" borderRadius="md" m={4}>
           <AlertIcon />
           Error: {error}
         </Alert>
       ) : allServicesState.length > 0 ? (
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th>Name</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {/* Render only visible services */}
-            {visibleServices.map(
-              ({
-                service,
-                hasChildren,
-                canIndent: canIndentState,
-                canOutdent: canOutdentState,
-              }) => (
-                <ServiceTreeRow
-                  key={service.uuid}
-                  service={service}
-                  hasChildren={hasChildren}
-                  isExpanded={expandedServices.has(service.uuid)}
-                  onToggle={() => handleToggle(service.uuid)}
-                  onDelete={handleDeleteService}
-                  onIndent={() => handleIndentService(service.uuid)}
-                  onOutdent={() => handleOutdentService(service.uuid)}
-                  canIndent={canIndentState}
-                  canOutdent={canOutdentState}
-                  ref={(el) => (serviceRefs.current[service.uuid] = el)}
-                />
-              )
-            )}
-          </Tbody>
-        </Table>
+        <Box overflowX="auto">
+          <Table
+            variant="simple"
+            borderRadius="md"
+            overflow="hidden"
+            boxShadow="md"
+            size="sm"
+            width="100%"
+          >
+            <Thead bg={headerBg} position="sticky" top="0" boxShadow="sm">
+              <Tr>
+                <Th
+                  fontSize="xs" // Smaller font
+                  textTransform="uppercase"
+                  fontWeight="bold"
+                  color="white"
+                  letterSpacing="wider"
+                >
+                  Name
+                </Th>
+                {/* Placeholder Columns */}
+                <Th
+                  fontSize="xs"
+                  textTransform="uppercase"
+                  fontWeight="bold"
+                  color="white"
+                  letterSpacing="wider"
+                >
+                  Column 1
+                </Th>
+                <Th
+                  fontSize="xs"
+                  textTransform="uppercase"
+                  fontWeight="bold"
+                  color="white"
+                  letterSpacing="wider"
+                >
+                  Column 2
+                </Th>
+                <Th
+                  fontSize="xs"
+                  textTransform="uppercase"
+                  fontWeight="bold"
+                  color="white"
+                  letterSpacing="wider"
+                >
+                  Column 3
+                </Th>
+                {/* Action Column Header */}
+                <Th
+                  fontSize="xs"
+                  textTransform="uppercase"
+                  fontWeight="bold"
+                  color="white"
+                  letterSpacing="wider"
+                  textAlign="right"
+                >
+                  Actions
+                </Th>
+              </Tr>
+            </Thead>
+
+            <Tbody>
+              {/* Render only visible services */}
+              {visibleServices.map(
+                ({
+                  service,
+                  hasChildren,
+                  canIndent: canIndentState,
+                  canOutdent: canOutdentState,
+                }) => (
+                  <ServiceTreeRow
+                    key={service.uuid}
+                    service={service}
+                    hasChildren={hasChildren}
+                    isExpanded={expandedServices.has(service.uuid)}
+                    onToggle={() => handleToggle(service.uuid)}
+                    onDelete={handleDeleteService}
+                    onIndent={() => handleIndentService(service.uuid)}
+                    onOutdent={() => handleOutdentService(service.uuid)}
+                    canIndent={canIndentState}
+                    canOutdent={canOutdentState}
+                    ref={(el) => (serviceRefs.current[service.uuid] = el)}
+                    hoverBg={hoverBg} // Pass hoverBg for styling
+                  >
+                    {/* Placeholder Cells */}
+                    <Td p={1}>
+                      <Text fontSize="xs" color={noDataTextColor}>
+                        {/* Future content */}
+                      </Text>
+                    </Td>
+                    <Td p={1}>
+                      <Text fontSize="xs" color={noDataTextColor}>
+                        {/* Future content */}
+                      </Text>
+                    </Td>
+                    <Td p={1}>
+                      <Text fontSize="xs" color={noDataTextColor}>
+                        {/* Future content */}
+                      </Text>
+                    </Td>
+                  </ServiceTreeRow>
+                )
+              )}
+            </Tbody>
+          </Table>
+        </Box>
       ) : (
-        <Text textAlign="center" color="gray.500">
-          No services available.
-        </Text>
+        <Box p={4}>
+          <Text textAlign="center" color={noDataTextColor} fontSize="sm">
+            No services available.
+          </Text>
+        </Box>
       )}
     </Box>
   );
