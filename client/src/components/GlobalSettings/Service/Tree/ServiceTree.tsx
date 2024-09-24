@@ -17,10 +17,10 @@ import {
 } from "@chakra-ui/react";
 import ServiceTreeRow from "./ServiceTreeRow";
 import ServiceTreeToolbar from "./ServiceTreeToolbar";
-import { useServices } from "../../../../hooks/useServices";
-import useCreateService from "../../../../hooks/useCreateService";
-import useUpdateService from "../../../../hooks/useUpdateService";
-import { useDeleteService } from "../../../../hooks/useDeleteService";
+import { useServices } from "../../../../hooks/Services/useServices";
+import useCreateService from "../../../../hooks/Services/useCreateService";
+import useUpdateService from "../../../../hooks/Services/useUpdateService";
+import { useDeleteService } from "../../../../hooks/Services/useDeleteService";
 import { Service } from "../../../../types/Service";
 import {
   indentService,
