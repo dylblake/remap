@@ -13,6 +13,7 @@ import {
 import NavBar from "../../components/Common/NavBar";
 import AsideLinks from "../../components/GlobalSettings/AsideLinks";
 import AboveLinks from "../../components/GlobalSettings/AboveLinks"; // Importing AboveLinks for small screens
+import DomainTree from "@components/GlobalSettings/Domain/Tree/DomainTree";
 
 const Domains: React.FC = () => {
   const templateAreas = useMemo(
@@ -92,7 +93,7 @@ const Domains: React.FC = () => {
             <Box>
               {/* Add your main content here */}
               <Text fontSize="lg" color={textColor}>
-                Add main content here...
+                <DomainTree />
               </Text>
             </Box>
           </Box>
