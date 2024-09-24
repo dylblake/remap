@@ -50,7 +50,7 @@ const ServiceTreeRow = forwardRef<HTMLTableRowElement, ServiceTreeRowProps>(
     const paddingLeft = level * 6; // 6 * 4px = 24px per level
 
     // Placeholder width to match IconButton size
-    const placeholderWidth = "24px"; // Match size="sm" IconButton
+    const placeholderWidth = "32px"; // Match size="sm" IconButton
 
     // Determine text color based on hover state
     const serviceNameColor = isHovered ? "teal.500" : "inherit";

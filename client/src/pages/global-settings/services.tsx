@@ -65,6 +65,8 @@ const Services: React.FC = () => {
         area="aside"
         display={{ base: "none", md: "block" }} // Hide on small screens
         position="relative"
+        borderRadius="md"
+        mt={6}
       >
         <AsideLinks />
       </GridItem>

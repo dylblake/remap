@@ -467,7 +467,7 @@ const ServiceTree: React.FC = () => {
           <Table
             variant="simple"
             borderRadius="md"
-            overflow="hidden"
+            // overflow="hidden"
             boxShadow="md"
             size="sm"
             width="100%"
