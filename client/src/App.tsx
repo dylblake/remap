@@ -3,8 +3,8 @@ import Home from "./pages/Home";
 import SettingsPage from "./pages/Settings";
 import UserProfilePage from "./pages/UserProfile";
 import Service from "./pages/global-settings/services";
-import TreeTime from "./pages/global-settings/tree-time";
 import Main from "./pages/global-settings/main";
+import Domains from "./pages/global-settings/domains";
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
         {/* global-settings */}
         <Route path="/global-settings/main" element={<Main />} />
         <Route path="/global-settings/services" element={<Service />} />
-        <Route path="/global-settings/tree-time" element={<TreeTime />} />
+        <Route path="/global-settings/domains" element={<Domains />} />
         {/* Add more routes as needed */}
       </Routes>
     </Router>

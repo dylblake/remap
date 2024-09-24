@@ -14,7 +14,7 @@ import NavBar from "../../components/Common/NavBar";
 import AsideLinks from "../../components/GlobalSettings/AsideLinks";
 import AboveLinks from "../../components/GlobalSettings/AboveLinks"; // Importing AboveLinks for small screens
 
-const Main: React.FC = () => {
+const Domains: React.FC = () => {
   const templateAreas = useMemo(
     () => ({
       base: `"nav" "above" "main"`,
@@ -81,10 +81,10 @@ const Main: React.FC = () => {
             {/* Heading and Subheading */}
             <VStack spacing={3} mb={10} align="start">
               <Heading as="h1" size="xl" color={textColor}>
-                Global Services Settings
+                Global Domain Settings
               </Heading>
               <Text fontSize="md" color={subTextColor}>
-                Manage and configure your global services here.
+                Manage and configure your global governance domains here.
               </Text>
             </VStack>
 
@@ -92,8 +92,7 @@ const Main: React.FC = () => {
             <Box>
               {/* Add your main content here */}
               <Text fontSize="lg" color={textColor}>
-                Welcome to the Global Services Settings page. Here you can
-                manage and configure all your global services.
+                Add main content here...
               </Text>
             </Box>
           </Box>
@@ -103,4 +102,4 @@ const Main: React.FC = () => {
   );
 };
 
-export default React.memo(Main);
+export default React.memo(Domains);

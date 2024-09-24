@@ -12,8 +12,8 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import NavBar from "../../components/Common/NavBar";
-import AsideLinks from "../../components/GlobalSettings/Service/AsideLinks";
-import AboveLinks from "../../components/GlobalSettings/Service/AboveLinks";
+import AsideLinks from "../../components/GlobalSettings/AsideLinks";
+import AboveLinks from "../../components/GlobalSettings/AboveLinks";
 import ServiceTreeCustomDragLayer from "../../components/GlobalSettings/Service/Tree/ServiceTreeCustomDragLayer";
 import ServiceTree from "../../components/GlobalSettings/Service/Tree/ServiceTree";
 
@@ -86,7 +86,7 @@ const Services: React.FC = () => {
               Global Services Settings
             </Heading>
             <Text fontSize="md" color={subheadingColor}>
-              Manage and configure your global services here.
+              Manage and configure your global service here.
             </Text>
           </VStack>
 
