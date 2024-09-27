@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import axiosInstance from '../api/axiosInstance';
+import { useState } from "react";
+import axiosInstance from "../../api/axiosInstance";
 
 export const useDeleteService = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,8 +15,8 @@ export const useDeleteService = () => {
         // Handle successful deletion if needed
       })
       .catch((err) => {
-        setError('Failed to delete service');
-        console.error('Error deleting service:', err);
+        setError("Failed to delete service");
+        console.error("Error deleting service:", err);
       })
       .finally(() => {
         setIsLoading(false);

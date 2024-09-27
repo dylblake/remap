@@ -1,5 +1,3 @@
-// /Users/dylanevans/GloDex/client/src/components/GlobalSettings/Service/ServiceTreeToolbar.tsx
-
 import React, { useCallback } from "react";
 import {
   Button,

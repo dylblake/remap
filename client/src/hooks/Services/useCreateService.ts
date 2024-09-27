@@ -1,12 +1,12 @@
 import { useState } from "react";
-import axiosInstance from "../api/axiosInstance";
-import { Service } from "../types/Service";
+import axiosInstance from "../../api/axiosInstance";
+import { Service } from "../../types/Service";
 
 interface CreateServiceResponse {
   service: Service | null;
   error: string | null;
   isLoading: boolean;
-  createService: (serviceData: Omit<Service, 'uuid'>) => Promise<void>;
+  createService: (serviceData: Omit<Service, "uuid">) => Promise<void>;
 }
 
 const useCreateService = (): CreateServiceResponse => {
@@ -14,7 +14,7 @@ const useCreateService = (): CreateServiceResponse => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const createService = (serviceData: Omit<Service, 'uuid'>): Promise<void> => {
+  const createService = (serviceData: Omit<Service, "uuid">): Promise<void> => {
     setIsLoading(true);
     setError(null);
 
@@ -27,9 +27,11 @@ const useCreateService = (): CreateServiceResponse => {
           resolve();
         })
         .catch((err) => {
-          console.error('Error creating service:', err);
+          console.error("Error creating service:", err);
           setService(null);
-          setError("There was an error creating the service. Please try again.");
+          setError(
+            "There was an error creating the service. Please try again."
+          );
           reject(err);
         })
         .finally(() => {

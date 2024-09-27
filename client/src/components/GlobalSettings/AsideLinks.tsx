@@ -6,7 +6,7 @@ import {
   VStack,
   useColorModeValue,
 } from "@chakra-ui/react";
-import MenuLink from "../../Common/MenuLink";
+import MenuLink from "../Common/MenuLink";
 import { FaGlobe } from "react-icons/fa";
 import { FaAnglesRight } from "react-icons/fa6";
 
@@ -42,8 +42,8 @@ const AsideLinks = () => {
           hoverBg={hoverBg}
         />
         <MenuLink
-          to="/global-settings/tree-time"
-          label="Tree Time"
+          to="/global-settings/domains"
+          label="Update Domains"
           icon={<FaAnglesRight />}
           hoverBg={hoverBg}
         />

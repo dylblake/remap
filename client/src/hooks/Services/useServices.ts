@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { fetchServices } from '../api/service';
-import { Service } from '../types/Service';
+import { useState, useEffect, useCallback } from "react";
+import { fetchServices } from "../../api/service";
+import { Service } from "../../types/Service";
 
 export const useServices = () => {
   const [services, setServices] = useState<Service[]>([]);
@@ -11,13 +11,13 @@ export const useServices = () => {
   const fetchServicesData = useCallback(() => {
     setIsLoading(true);
     setIsRefetching(false);
-    
+
     fetchServices()
       .then((data) => {
         setServices(data);
       })
       .catch(() => {
-        setError('Failed to fetch services');
+        setError("Failed to fetch services");
       })
       .finally(() => {
         setIsLoading(false);
@@ -26,13 +26,13 @@ export const useServices = () => {
 
   const refetch = () => {
     setIsRefetching(true);
-    
+
     fetchServices()
       .then((data) => {
         setServices(data);
       })
       .catch(() => {
-        setError('Failed to refetch services');
+        setError("Failed to refetch services");
       })
       .finally(() => {
         setIsRefetching(false);
