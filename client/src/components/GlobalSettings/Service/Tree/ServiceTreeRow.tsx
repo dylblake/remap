@@ -1,5 +1,3 @@
-// /Users/dylanevans/GloDex/client/src/components/GlobalSettings/Service/Tree/ServiceTreeRow.tsx
-
 import React, { useState, forwardRef } from "react";
 import { Tr, Td, Flex, Text, IconButton, Box } from "@chakra-ui/react";
 import {
@@ -9,7 +7,7 @@ import {
   ChevronLeftIcon,
 } from "@chakra-ui/icons";
 import { Service } from "../../../../types/Service";
-import DeleteIcon from "../DeleteIcon";
+import DeleteIcon from "@components/Common/DeleteIcon";
 
 interface ServiceTreeRowProps {
   service: Service;

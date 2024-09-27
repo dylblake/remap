@@ -1,5 +1,3 @@
-// /Users/dylanevans/GloDex/client/src/components/GlobalSettings/Service/Tree/ServiceTree.tsx
-
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Table,
