@@ -1,5 +1,3 @@
-// Glodex/client/src/pages/GlobalSettings/Main.tsx
-
 import React, { useMemo } from "react";
 import {
   Grid,
