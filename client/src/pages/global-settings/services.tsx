@@ -14,7 +14,6 @@ import {
 import NavBar from "../../components/Common/NavBar";
 import AsideLinks from "../../components/GlobalSettings/AsideLinks";
 import AboveLinks from "../../components/GlobalSettings/AboveLinks";
-import ServiceTreeCustomDragLayer from "../../components/GlobalSettings/Service/Tree/ServiceTreeCustomDragLayer";
 import ServiceTree from "../../components/GlobalSettings/Service/Tree/ServiceTree";
 
 const Services: React.FC = () => {
@@ -92,7 +91,6 @@ const Services: React.FC = () => {
 
           {/* Main Section */}
           <Stack spacing={6}>
-            <ServiceTreeCustomDragLayer />
             <ServiceTree />
           </Stack>
         </Box>
