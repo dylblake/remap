@@ -54,7 +54,7 @@ const DeleteIcon: React.FC<DeleteIconProps> = ({
       <PopoverContent width="auto">
         <PopoverBody m={2}>
           <Text align="center">
-            Remove this service <br />
+            Remove this <br />
             from GloDex?
           </Text>
         </PopoverBody>
