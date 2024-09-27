@@ -13,13 +13,12 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",
-    "@emotion/react": "^11.13.0",
+    "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
-    "ag-grid-community": "^32.2.0",
-    "ag-grid-react": "^32.2.0",
+    "@tanstack/react-table": "^8.20.5",
     "axios": "^1.7.7",
     "exceljs": "^4.4.0",
-    "framer-motion": "^11.3.28",
+    "framer-motion": "^11.5.6",
     "immutability-helper": "^3.1.1",
     "lodash": "^4.17.21",
     "react": "^18.3.1",
@@ -27,7 +26,8 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.3.1",
     "react-icons": "^5.3.0",
-    "react-router-dom": "^6.26.1"
+    "react-router-dom": "^6.26.1",
+    "uuid": "^10.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
