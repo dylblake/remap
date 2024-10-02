@@ -4,8 +4,6 @@ import knex from "knex";
 import knexConfig from "../knexfile";
 import express from "express";
 import cors from "cors";
-import serviceRoutes from "./routes/serviceRoutes";
-import domainRoutes from "./routes/domainRoutes";
 console.log("process.env.PORT", process.env.PORT);
 
 const environment = process.env.NODE_ENV || "development";
@@ -40,9 +38,7 @@ app.use(
 
 app.use(express.json());
 
-app.use("/api/services", serviceRoutes);
-
-app.use("/api/domains", domainRoutes);
+//app.use("/api/thing", thingRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);

@@ -1,9 +1,5 @@
 import React, { useMemo } from "react";
 import { Box, Grid, GridItem, useColorModeValue } from "@chakra-ui/react";
-import NavBar from "../components/Common/NavBar";
-import HeroSection from "../components/Home/HeroSection";
-import FeaturesSection from "../components/Home/FeaturesSection";
-import CTAFooter from "../components/Home/CTAFooter";
 
 const Home: React.FC = () => {
   const templateAreas = useMemo(
@@ -34,16 +30,10 @@ const Home: React.FC = () => {
         p={{ base: 2, md: 4 }}
       >
         {/* Nav Bar */}
-        <GridItem area="nav">
-          <NavBar />
-        </GridItem>
+        <GridItem area="nav"></GridItem>
 
         {/* Main Content */}
-        <GridItem area="main">
-          <HeroSection />
-          <FeaturesSection />
-          <CTAFooter />
-        </GridItem>
+        <GridItem area="main"></GridItem>
       </Grid>
     </Box>
   );

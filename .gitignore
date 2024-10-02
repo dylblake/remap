@@ -25,12 +25,12 @@ coverage/
 jspm_packages/
 .eslintcache
 
-# Environment files
-.env
-.env.local
-.env.development
-.env.test
-.env.production
+# # Environment files
+# .env
+# .env.local
+# .env.development
+# .env.test
+# .env.production
 
 # IDEs and editors
 .idea/

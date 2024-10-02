@@ -29,20 +29,20 @@ services:
     image: postgres
     restart: always
     volumes:
-      - db-data3:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
       - ./server:/data
     environment:
-      - POSTGRES_USER=glodex
-      - POSTGRES_DB=glodex
-      - POSTGRES_PASSWORD=glodex
+      - POSTGRES_USER=remap
+      - POSTGRES_DB=remap
+      - POSTGRES_PASSWORD=remap
     ports:
       - 5431:5432
     expose:
       - 5432
     healthcheck:
-      test: ["CMD", "psql", "-U", "glodex", "-d", "glodex", "-c", "SELECT 1"]
+      test: ["CMD", "psql", "-U", "remap", "-d", "remap", "-c", "SELECT 1"]
       interval: 10s
       timeout: 5s
       retries: 5
 volumes:
-  db-data3:
+  db-data:

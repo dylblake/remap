@@ -1,5 +1,5 @@
 {
-  "name": "gp_glodex",
+  "name": "remap",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -16,8 +16,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "axios": "^1.7.7",
-    "exceljs": "^4.4.0",
-    "framer-motion": "^11.5.6",
+    "framer-motion": "^11.9.0",
     "immutability-helper": "^3.1.1",
     "lodash": "^4.17.21",
     "react": "^18.3.1",
